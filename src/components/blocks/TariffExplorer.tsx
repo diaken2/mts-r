@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import TariffCard from "@/components/tariff/TariffCard";
 import ContactModal from "@/components/forms/ContactModal";
 import ConnectionForm from "@/components/forms/ConnectionForm";
 import MobileFiltersDrawer from "@/components/filters/MobileFiltersDrawer";
-import { FiFilter } from "react-icons/fi";
+import { FiFilter, FiChevronDown } from "react-icons/fi";
 import SegmentationModal from "@/components/ui/SegmentationModal";
 import CallRequestModal from "@/components/ui/CallRequestModal";
 import HowConnect from "@/components/blocks/HowConnect";
@@ -22,7 +22,6 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { submitLead } from "@/lib/submitLead";
 import InputMask from "react-input-mask";
-
 
 type Filters = {
   internet: boolean;
@@ -43,23 +42,29 @@ type BooleanFilterKey =
   | 'gameBonuses'
   | 'promotions'
   | 'hitsOnly';
+
 const defaultFilters: Filters = {
-  internet: true,
+  internet: false,
   tv: false,
   mobile: false,
   onlineCinema: false,
   gameBonuses: false,
   promotions: false,
   hitsOnly: false,
-  priceRange: [300, 1700],
+  priceRange: [300, 1650],
   speedRange: [50, 1000],
 };
+
 const houseTypes = ["Квартира", "Частный дом", "Офис"];
 const supportOptions = [
   "Оплата услуг",
   "Оборудование",
   "Не работает интернет/ТВ"
 ];
+interface TimeSlot {
+  value: string;
+  label: string;
+}
 function TariffHelpForm() {
   const [step, setStep] = React.useState<null | 'connection' | 'support'>(null);
   const [houseType, setHouseType] = React.useState(houseTypes[0]);
@@ -72,18 +77,133 @@ function TariffHelpForm() {
   const router = useRouter();
   const { setSupportOnly } = useSupportOnly();
 
+  const [callTime, setCallTime] = useState('');
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+  const [shouldOpenUp, setShouldOpenUp] = useState(false);
+  const timeDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Генерация временных слотов
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const slots: TimeSlot[] = [];
+
+    // Определяем рабочее время (6:00-21:00)
+    const isWorkingHours = currentHour >= 6 && currentHour < 21;
+
+    if (!isWorkingHours) {
+      slots.push({
+        value: 'out-of-hours',
+        label: 'Перезвоним в рабочее время'
+      });
+      
+      for (let hour = 6; hour <= 11; hour++) {
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+      
+      setTimeSlots(slots);
+      setCallTime('out-of-hours');
+      return;
+    }
+
+    // Рабочее время
+    slots.push({
+      value: 'asap',
+      label: 'Перезвоним в течение 15 минут'
+    });
+
+    let slotHour = currentHour;
+    let slotMinute = Math.ceil(currentMinute / 15) * 15;
+    
+    if (slotMinute === 60) {
+      slotHour += 1;
+      slotMinute = 0;
+    }
+    
+    while (slotHour < 21 && slots.length < 8) {
+      let endMinute = slotMinute + 15;
+      let endHour = slotHour;
+      
+      if (endMinute >= 60) {
+        endHour += 1;
+        endMinute = endMinute - 60;
+      }
+      
+      if (endHour > 21 || (endHour === 21 && endMinute > 0)) {
+        break;
+      }
+      
+      slots.push({
+        value: `today-${slotHour}-${slotMinute}`,
+        label: `Сегодня ${slotHour}:${slotMinute.toString().padStart(2, '0')}-${endHour}:${endMinute.toString().padStart(2, '0')}`
+      });
+      
+      slotMinute += 15;
+      if (slotMinute >= 60) {
+        slotHour += 1;
+        slotMinute = 0;
+      }
+    }
+
+    if (slots.length < 8) {
+      for (let hour = 6; hour <= 11; hour++) {
+        if (slots.length >= 8) break;
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+    }
+
+    setTimeSlots(slots);
+    setCallTime('asap');
+  }, []);
+
+  useEffect(() => {
+    if (isTimeDropdownOpen && timeDropdownRef.current) {
+      const rect = timeDropdownRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setShouldOpenUp(spaceBelow < 350);
+    }
+  }, [isTimeDropdownOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
+        setIsTimeDropdownOpen(false);
+      }
+    };
+
+    if (isTimeDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isTimeDropdownOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitted(true);
 
     try {
+      const selectedSlot = timeSlots.find(slot => slot.value === callTime);
+      const callTimeText = selectedSlot?.label || callTime;
+
       const result = await submitLead({
         type: step === 'connection' ? 'Новое подключение' : 'Поддержка существующего абонента',
         name: name,
         phone: phone,
         houseType: houseType,
         supportValue: supportValue || undefined,
+        callTime: callTimeText,
       });
 
       if (result.success) {
@@ -127,8 +247,8 @@ function TariffHelpForm() {
   if (!step) {
     return (
       <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <button className="bg-[#ff4d06] text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-[#ff7f2a]" onClick={() => setStep('connection')}>Новое подключение</button>
-        <button className="bg-transparent border-2 border-white text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-white hover:text-[#8000ff]" onClick={() => setStep('support')}>Я существующий абонент</button>
+        <button className="bg-mts-red hover:bg-mts-red-dark text-white font-bold rounded-full px-10 py-4 text-lg transition" onClick={() => setStep('connection')}>Новое подключение</button>
+        <button className="bg-transparent border-2 border-white text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-white hover:text-[#7500ff]" onClick={() => setStep('support')}>Я существующий абонент</button>
       </div>
     );
   }
@@ -141,7 +261,7 @@ function TariffHelpForm() {
           <div className="flex flex-row gap-8 items-center mb-2 overflow-x-auto pb-2">
             {houseTypes.map((type) => (
               <label key={type} className="flex items-center cursor-pointer select-none text-[16px] font-medium font-sans flex-shrink-0">
-                <span className={`w-7 h-7 flex items-center justify-center rounded-full border-2 mr-2 transition-all duration-150 ${houseType === type ? "border-[#FF4F12] bg-[#FF4F12]" : "border-gray-300 bg-white"}`}>
+                <span className={`w-7 h-7 flex items-center justify-center rounded-full border-2 mr-2 transition-all duration-150 ${houseType === type ? "border-mts-red bg-mts-red" : "border-gray-300 bg-white"}`}>
                   {houseType === type && (
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" fill="#fff" /></svg>
                   )}
@@ -184,16 +304,58 @@ function TariffHelpForm() {
             {/* Кнопка */}
             <button
               type="submit"
-              className={`w-full md:w-[200px] h-[44px] rounded-full px-6 text-[16px] font-medium font-sans transition ml-0 md:ml-4 ${isFormValid && !submitted && !isSubmitting ? "bg-[#FF4F12] text-white" : "bg-[#FFD6C2] text-white cursor-not-allowed"}`}
+              className={`w-full md:w-[200px] h-[44px] rounded-full px-6 text-[16px] font-medium font-sans transition ml-0 md:ml-4 ${isFormValid && !submitted && !isSubmitting ? "bg-mts-red text-white" : "bg-[#FFD6C2] text-white cursor-not-allowed"}`}
               disabled={!isFormValid || submitted || isSubmitting}
             >
               {submitted ? 'Отправлено!' : isSubmitting ? 'Отправляем...' : 'Жду звонка'}
             </button>
           </div>
-          {/* Подпись под полем */}
-          <div className="flex items-center gap-2 mt-3 justify-start">
-            <span className="text-white text-[13px] font-normal font-sans">Перезвоним в течение 15 минут</span>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          {/* Выбор времени */}
+          <div className="relative mt-3" ref={timeDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+              className={`
+                flex items-center gap-2 justify-start text-left transition-all
+                text-white text-[13px] font-normal font-sans
+                ${isTimeDropdownOpen ? 'opacity-100' : 'opacity-80'}
+              `}
+            >
+              <span>
+                {timeSlots.find(slot => slot.value === callTime)?.label || 'Перезвоним в течение 15 минут'}
+              </span>
+              <svg className={`w-[18px] h-[18px] transition-transform ${isTimeDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {isTimeDropdownOpen && (
+              <div className={`
+                absolute left-0 right-auto mt-1 bg-white border border-gray-200 rounded-xl shadow-lg
+                z-10 max-h-60 overflow-y-auto
+                ${shouldOpenUp ? 'bottom-full mb-1' : 'top-full'}
+              `}>
+                {timeSlots.map((slot) => (
+                  <button
+                    key={slot.value}
+                    type="button"
+                    onClick={() => {
+                      setCallTime(slot.value);
+                      setIsTimeDropdownOpen(false);
+                    }}
+                    className={`
+                      w-full px-4 py-3 text-left transition-colors
+                      ${callTime === slot.value
+                        ? 'bg-[#ee3c6b] text-white'
+                        : 'text-gray-900 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    {slot.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {/* Юридическая строка */}
           <p className="text-[12px] font-light font-sans mt-2 text-left text-[#D8B5FF]">Отправляя заявку, вы соглашаетесь с <a href="#" className="underline">политикой обработки персональных данных</a></p>
@@ -201,44 +363,23 @@ function TariffHelpForm() {
       </>
     );
   }
-
-  // step === 'support'
-  return (
-    <div className="flex flex-col gap-4 items-center animate-fade-in">
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 w-full">
-        {supportOptions.map((opt) => (
-          <button key={opt} className={`px-7 py-3 rounded-full border-2 font-semibold text-base transition focus:outline-none flex-shrink-0 ${supportValue === opt ? "bg-[#ff4d06] border-[#ff4d06] text-white" : "border-white text-white bg-transparent"}`} onClick={() => setSupportValue(opt)}>{opt}</button>
-        ))}
-      </div>
-      {supportValue && (
-        <div className="bg-white/10 rounded-xl p-6 max-w-lg text-center">
-          <h3 className="text-xl font-bold mb-2 text-white">Вы являетесь действующим абонентом Ростелеком</h3>
-          <p className="mb-2 text-white/80">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
-          <div className="mb-2">
-            <span className="text-base text-white/80">Рекомендуем позвонить по номеру</span><br />
-            <a href="tel:88001000800" className="text-2xl md:text-3xl font-bold text-white hover:underline">8 800 100-08-00</a>
-            <div className="text-xs text-white/60">Звонок бесплатный по РФ</div>
-          </div>
-          <div className="text-base text-white/80">
-            или узнать информацию в <a href="#" className="underline text-white">личном кабинете</a>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
+
+
 export default function TariffExplorer({
   tariffs,
   cityName,
   citySlug,
-  service,titleservice,origservice
+  service,
+  titleservice,
+  origservice
 }: {
   tariffs: any[];
   cityName: string;
   citySlug: string;
   service: string;
-  titleservice:string;
-  origservice:string;
+  titleservice: string;
+  origservice: string;
 }) {
   const [visibleCount, setVisibleCount] = useState(6);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -246,7 +387,7 @@ export default function TariffExplorer({
   const [isCallRequestModalOpen, setIsCallRequestModalOpen] = useState(false);
   const [isSegmentationModalOpen, setIsSegmentationModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState("popular");
- const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
   const { isSupportOnly } = useSupportOnly();
@@ -259,232 +400,249 @@ export default function TariffExplorer({
     "internet-mobile": "Интернет + Моб. связь",
     "internet-tv-mobile": "Интернет + ТВ + Моб. связь",
   }), []);
-  console.log(origservice)
-console.log(categoryMapping[origservice])
-console.log(service)
-console.log(tariffs)
-  console.log( )
-useEffect(() => {
-if (categoryMapping[origservice]) {
-setActiveCategory(origservice);
-setFilters(prev => ({
-...prev,
-...getServiceFiltersForCategory(origservice),
-}));
-}
-}, [origservice, categoryMapping]);
-function getTariffTypeKey(type: string): string {
-const hasInternet = /интернет/i.test(type);
-const hasTV = /тв/i.test(type);
-const hasMobile = /моб/i.test(type);
 
-if (hasInternet && hasTV && hasMobile) return "internet-tv-mobile";
-if (hasInternet && hasTV) return "internet-tv";
-if (hasInternet && hasMobile) return "internet-mobile";
-if (hasInternet) return "internet";
+  const getTariffTypeKey = (type: string): string => {
+    const hasInternet = /интернет/i.test(type);
+    const hasTV = /тв/i.test(type);
+    const hasMobile = /моб/i.test(type);
 
-return "other";
-}
+    if (hasInternet && hasTV && hasMobile) return "internet-tv-mobile";
+    if (hasInternet && hasTV) return "internet-tv";
+    if (hasInternet && hasMobile) return "internet-mobile";
+    if (hasInternet) return "internet";
+    return "other";
+  };
 
- const filteredTariffs = React.useMemo(() => {
-const hasActiveFilters =
-filters.internet || filters.tv || filters.mobile ||
-filters.onlineCinema || filters.gameBonuses;
+  useEffect(() => {
+    if (categoryMapping[origservice]) {
+      setActiveCategory(origservice);
+      setFilters(prev => ({
+        ...prev,
+        ...getServiceFiltersForCategory(origservice),
+      }));
+    }
+  }, [origservice, categoryMapping]);
 
-return tariffs.filter((tariff) => {
-const typeKey = getTariffTypeKey(tariff.type || "");
-const featureText = `${tariff.name ?? ''} ${(tariff.features || []).join(' ')}`.toLowerCase();
+  const filteredTariffs = useMemo(() => {
+    const hasActiveFilters = filters.internet || filters.tv || filters.mobile ||
+      filters.onlineCinema || filters.gameBonuses;
 
+    return tariffs.filter((tariff) => {
+      const typeKey = getTariffTypeKey(tariff.type || "");
+      const featureText = `${tariff.name ?? ''} ${(tariff.features || []).join(' ')}`.toLowerCase();
 
-// Категории
-let categoryMatch = true;
-if (activeCategory !== "all") {
-  categoryMatch = typeKey === activeCategory;
-}
+      let categoryMatch = true;
+      if (activeCategory !== "all") {
+        categoryMatch = typeKey === activeCategory;
+      }
 
-// Боковые фильтры
-let sidebarMatch = true;
-if (activeCategory === 'all' && hasActiveFilters) {
-sidebarMatch =
-(filters.internet && tariff.type.includes('Интернет')) ||
-(filters.tv && tariff.type.includes('ТВ')) ||
-(filters.mobile && tariff.type.includes('Моб')) ||
-(filters.onlineCinema && (
-featureText.includes('wink') ||
-featureText.includes('фильм') ||
-featureText.includes('сериал') ||
-featureText.includes('кино')
-)) ||
-(filters.gameBonuses && (
-featureText.includes('игров') ||
-featureText.includes('бонус')
-));
-}
+      let sidebarMatch = true;
+      if (activeCategory === 'all' && hasActiveFilters) {
+        sidebarMatch =
+          (filters.internet && tariff.type.includes('Интернет')) ||
+          (filters.tv && tariff.type.includes('ТВ')) ||
+          (filters.mobile && tariff.type.includes('Моб')) ||
+          (filters.onlineCinema && (
+            featureText.includes('kion') ||
+            featureText.includes('фильм') ||
+            featureText.includes('сериал') ||
+            featureText.includes('кино')
+          )) ||
+          (filters.gameBonuses && (
+            featureText.includes('игров') ||
+            featureText.includes('бонус')
+          ));
+      }
 
-const promoMatch =
-  !filters.promotions ||
-  tariff.discountPrice !== undefined ||
-  tariff.discountPercentage !== undefined;
+      const promoMatch =
+        !filters.promotions ||
+        tariff.discountPrice !== undefined ||
+        tariff.discountPercentage !== undefined;
 
-const hitsMatch = !filters.hitsOnly || tariff.isHit;
+      const hitsMatch = !filters.hitsOnly || tariff.isHit;
 
-const priceMatch =
-  tariff.price >= filters.priceRange[0] &&
-  tariff.price <= filters.priceRange[1];
+      const priceMatch =
+        tariff.price >= filters.priceRange[0] &&
+        tariff.price <= filters.priceRange[1];
 
-const speedMatch =
-  !tariff.speed ||
-  (tariff.speed >= filters.speedRange[0] &&
-    tariff.speed <= filters.speedRange[1]);
+      const speedMatch =
+        !tariff.speed ||
+        (tariff.speed >= filters.speedRange[0] &&
+          tariff.speed <= filters.speedRange[1]);
 
-return categoryMatch && sidebarMatch && promoMatch && hitsMatch && priceMatch && speedMatch;
-});
-}, [tariffs, filters, activeCategory]);
+      return categoryMatch && sidebarMatch && promoMatch && hitsMatch && priceMatch && speedMatch;
+    });
+  }, [tariffs, filters, activeCategory]);
 
- const handleFilterChange = (newFilters: Partial<Filters>) => {
-setFilters((prev) => {
-const updated = { ...prev, ...newFilters };
+  const handleFilterChange = (newFilters: Partial<Filters>) => {
+    setFilters((prev) => {
+      const updated = { ...prev, ...newFilters };
+      const { internet, tv, mobile } = updated;
 
+      let nextCategory = 'all';
+      if (internet && tv && mobile) nextCategory = 'internet-tv-mobile';
+      else if (internet && tv) nextCategory = 'internet-tv';
+      else if (internet && mobile) nextCategory = 'internet-mobile';
+      else if (internet && !tv && !mobile) nextCategory = 'internet';
 
-const { internet, tv, mobile } = updated;
+      if ((!internet && tv && !mobile) || (!internet && !tv && mobile)) {
+        nextCategory = 'all';
+      }
 
-let nextCategory = 'all';
+      setActiveCategory(nextCategory);
+      return updated;
+    });
+  };
 
-if (internet && tv && mobile) {
-  nextCategory = 'internet-tv-mobile';
-} else if (internet && tv) {
-  nextCategory = 'internet-tv';
-} else if (internet && mobile) {
-  nextCategory = 'internet-mobile';
-} else if (internet && !tv && !mobile) {
-  nextCategory = 'internet';
-}
-
-// если только моб или только тв — оставляем "все"
-if (
-  (!internet && tv && !mobile) ||
-  (!internet && !tv && mobile)
-) {
-  nextCategory = 'all';
-}
-
-setActiveCategory(nextCategory);
-return updated;
-});
-};
-
- const handleCategoryChange = (categoryId: string) => {
-  
-setActiveCategory(categoryId);
-
-if (categoryId === 'all') {
-setFilters(prev => ({
-...prev,
-internet: false,
-tv: false,
-mobile: false,
-}));
-} else {
-const serviceFilters = getServiceFiltersForCategory(categoryId);
-setFilters(prev => ({
-...prev,
-...serviceFilters,
-}));
-}
-};
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    if (categoryId === 'all') {
+      setFilters(prev => ({
+        ...prev,
+        internet: false,
+        tv: false,
+        mobile: false,
+      }));
+    } else {
+      const serviceFilters = getServiceFiltersForCategory(categoryId);
+      setFilters(prev => ({
+        ...prev,
+        ...serviceFilters,
+      }));
+    }
+  };
 
   const resetFilters = () => {
     setFilters({ ...defaultFilters });
+    setActiveCategory("all");
   };
+
+  const sortedTariffs = useMemo(() => {
+    switch (sortBy) {
+      case "speed":
+        return [...filteredTariffs].sort((a, b) => (b.speed || 0) - (a.speed || 0));
+      case "price-low":
+        return [...filteredTariffs].sort((a, b) => a.price - b.price);
+      case "price-high":
+        return [...filteredTariffs].sort((a, b) => b.price - a.price);
+      default:
+        return filteredTariffs;
+    }
+  }, [filteredTariffs, sortBy]);
+
+  const isAllCategoryActive = !filters.internet && !filters.tv && !filters.mobile;
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="bg-gradient-to-r from-[#F26A2E] to-[#7B2FF2] py-8 text-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-sm opacity-80 mb-2">
-            Ростелеком / {cityName} / <b>{titleservice}</b>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#e30611]/5 via-[#8f97de]/10 to-[#ad82f2]/5 py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-sm text-gray-600 mb-2">
+            МТС / {cityName} / <b>{titleservice}</b>
           </div>
-          <h1 className="text-3xl font-bold">
-            Тарифы Ростелеком на {service} в {cityName}
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Тарифы МТС на {service} в {cityName}
           </h1>
         </div>
       </div>
 
-      <main className="flex-grow container py-8 flex flex-col lg:flex-row gap-8">
-        <aside className="hidden lg:block lg:w-1/4 order-2 lg:order-1">
-          <div className="card rounded-3xl p-4 shadow sticky top-4">
-            <h3 className="text-lg font-bold mb-6">Фильтры</h3>
+      <main className="flex-grow container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        {/* Desktop Filters */}
+        <aside className="hidden lg:block w-1/4">
+          <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-4">
+            <h3 className="text-lg font-bold mb-6 text-gray-900">Фильтры</h3>
 
             <div className="mb-6">
-              <h4 className="font-semibold mb-3">Услуги</h4>
+              <h4 className="font-semibold mb-4 text-gray-900">Услуги</h4>
               <div className="space-y-3">
                 {[
-  { key: 'internet', label: 'Интернет' },
-  { key: 'tv', label: 'ТВ' },
-  { key: 'mobile', label: 'Мобильная связь' },
-  { key: 'onlineCinema', label: 'Онлайн-кинотеатр' },
-  { key: 'gameBonuses', label: 'Игровые бонусы' },
-].map(item => (
-  <label key={item.key} className="flex items-center space-x-2 mb-2">
-    <input
-      type="checkbox"
-      checked={filters[item.key as BooleanFilterKey]}
-      onChange={() =>
-        handleFilterChange({
-          [item.key]: !filters[item.key as BooleanFilterKey],
-        })
-      }
-      className="checkbox-custom"
-    />
-    <span>{item.label}</span>
-  </label>
-))}
+                  { key: 'internet', label: 'Интернет' },
+                  { key: 'tv', label: 'ТВ' },
+                  { key: 'mobile', label: 'Мобильная связь' },
+                  { key: 'onlineCinema', label: 'Онлайн-кинотеатр' },
+                  { key: 'gameBonuses', label: 'Игровые бонусы' },
+                ].map(item => (
+                  <label key={item.key} className="flex items-center space-x-3 cursor-pointer group">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={filters[item.key as BooleanFilterKey]}
+                        onChange={() => handleFilterChange({ [item.key]: !filters[item.key as BooleanFilterKey] })}
+                        className="sr-only"
+                      />
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                        filters[item.key as BooleanFilterKey] 
+                          ? 'bg-[#ee3c6b] border-[#ee3c6b]' 
+                          : 'border-gray-300 group-hover:border-[#ee3c6b]'
+                      }`}>
+                        {filters[item.key as BooleanFilterKey] && (
+                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-gray-700 group-hover:text-[#ee3c6b] transition-colors">{item.label}</span>
+                  </label>
+                ))}
               </div>
             </div>
 
             <div className="mb-6">
-              <h4 className="font-semibold mb-3">Спецпредложения</h4>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.promotions}
-                  onChange={() => handleFilterChange({ promotions: !filters.promotions })}
-                  className="checkbox-custom mr-3"
-                />
-                <span className="text-sm">% Акции</span>
-              </label>
-              <label className="flex items-center cursor-pointer mt-2">
-                <input
-                  type="checkbox"
-                  checked={filters.hitsOnly}
-                  onChange={() => handleFilterChange({ hitsOnly: !filters.hitsOnly })}
-                  className="checkbox-custom mr-3"
-                />
-                <span className="text-sm">Только хиты</span>
-              </label>
+              <h4 className="font-semibold mb-4 text-gray-900">Спецпредложения</h4>
+              {[
+                { key: 'promotions', label: '% Акции' },
+                { key: 'hitsOnly', label: 'Только хиты' },
+              ].map(item => (
+                <label key={item.key} className="flex items-center space-x-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={filters[item.key as BooleanFilterKey]}
+                      onChange={() => handleFilterChange({ [item.key]: !filters[item.key as BooleanFilterKey] })}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      filters[item.key as BooleanFilterKey] 
+                        ? 'bg-[#ee3c6b] border-[#ee3c6b]' 
+                        : 'border-gray-300 group-hover:border-[#ee3c6b]'
+                    }`}>
+                      {filters[item.key as BooleanFilterKey] && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-gray-700 group-hover:text-[#ee3c6b] transition-colors">{item.label}</span>
+                </label>
+              ))}
             </div>
 
             <div className="mb-6">
-              <h4 className="font-semibold mb-3">Стоимость в месяц (₽)</h4>
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <h4 className="font-semibold mb-4 text-gray-900">Стоимость в месяц (₽)</h4>
+              <div className="flex justify-between text-sm text-gray-600 mb-3">
                 <span>{filters.priceRange[0]}</span>
                 <span>{filters.priceRange[1]}</span>
               </div>
               <Slider
                 range
                 min={300}
-                max={1700}
+                max={1650}
                 value={filters.priceRange}
                 onChange={(value) => Array.isArray(value) && handleFilterChange({ priceRange: value })}
-                trackStyle={[{ backgroundColor: '#FF6600' }]}
-                handleStyle={[{ borderColor: '#FF6600', backgroundColor: '#FF6600' }, { borderColor: '#FF6600', backgroundColor: '#FF6600' }]}
-                railStyle={{ backgroundColor: '#eee' }}
+                trackStyle={[{ backgroundColor: '#ee3c6b' }]}
+                handleStyle={[
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' },
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' }
+                ]}
+                railStyle={{ backgroundColor: '#e5e5ed' }}
               />
             </div>
 
             <div className="mb-6">
-              <h4 className="font-semibold mb-3">Скорость (Мбит/с)</h4>
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <h4 className="font-semibold mb-4 text-gray-900">Скорость (Мбит/с)</h4>
+              <div className="flex justify-between text-sm text-gray-600 mb-3">
                 <span>{filters.speedRange[0]}</span>
                 <span>{filters.speedRange[1]}</span>
               </div>
@@ -494,81 +652,98 @@ setFilters(prev => ({
                 max={1000}
                 value={filters.speedRange}
                 onChange={(value) => Array.isArray(value) && handleFilterChange({ speedRange: value })}
-                trackStyle={[{ backgroundColor: '#FF6600' }]}
-                handleStyle={[{ borderColor: '#FF6600', backgroundColor: '#FF6600' }, { borderColor: '#FF6600', backgroundColor: '#FF6600' }]}
-                railStyle={{ backgroundColor: '#eee' }}
+                trackStyle={[{ backgroundColor: '#ee3c6b' }]}
+                handleStyle={[
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' },
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' }
+                ]}
+                railStyle={{ backgroundColor: '#e5e5ed' }}
               />
             </div>
+
+            <button
+              onClick={resetFilters}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+            >
+              Сбросить фильтры
+            </button>
           </div>
         </aside>
 
-        <div className="w-full lg:w-3/4 order-1 lg:order-2">
-          <div className="mb-6 -mx-4 lg:mx-0">
-            <div className="flex gap-3 items-center px-4 overflow-x-auto scroll-smooth whitespace-nowrap lg:flex-wrap lg:overflow-visible lg:whitespace-normal">
-               <button
-    key="all"
-    className={`px-4 py-2 rounded-full text-sm font-medium transition bg-gray-100 text-gray-700 hover:bg-gray-200s`}
-    onClick={() => router.push(`/${citySlug}`)}
-  >Все</button>
-            {Object.entries(categoryMapping).map(([id, label]) => {
-const expected = getServiceFiltersForCategory(id);
-const { internet, tv, mobile } = filters; // ← добавь эту строку
+        {/* Main Content */}
+        <div className="w-full lg:w-3/4">
+          {/* Category Filters */}
+          <div className="mb-6">
+            <div className="flex gap-3 items-center overflow-x-auto scroll-smooth whitespace-nowrap pb-2">
+              <button
+                onClick={() => handleCategoryChange("all")}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                  isAllCategoryActive 
+                    ? "bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white shadow-lg" 
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Все
+              </button>
+              
+              {Object.entries(categoryMapping).map(([id, label]) => {
+                const { internet, tv, mobile } = filters;
+                const expected = getServiceFiltersForCategory(id);
+                const isActiveCategory = internet === expected.internet && tv === expected.tv && mobile === expected.mobile;
 
-const isActiveCategory =
-internet === expected.internet &&
-tv === expected.tv &&
-mobile === expected.mobile;
-
-return (
-<button
-key={id}
-onClick={() => handleCategoryChange(id)}
-className={`px-4 py-2 rounded-full text-sm font-medium transition ${ isActiveCategory ? "bg-rt-cta text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200" }`}
->
-{label}
-</button>
-);
-})}
+                return (
+                  <button
+                    key={id}
+                    onClick={() => handleCategoryChange(id)}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                      isActiveCategory
+                        ? "bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white shadow-lg"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* Header with Sort */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <h2 className="text-2xl font-bold">
-                Доступные тарифы 
-                <span className="text-lg font-normal text-gray-600 ml-2">
-                  ({filteredTariffs.length})
-                </span>
-              </h2>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Сортировка:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => {
-                    setSortBy(e.target.value);
-                  }}
-                  className="form-input py-2 text-sm min-w-[140px]"
-                >
-                  <option value="popular">Популярные</option>
-                  <option value="speed">Быстрые</option>
-                  <option value="price-low">Подешевле</option>
-                  <option value="price-high">Подороже</option>
-                </select>
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setIsMobileFiltersOpen(true)}
-                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setIsMobileFiltersOpen(true)}
-                  className="lg:hidden inline-flex items-center gap-1 text-sm font-medium text-rt-cta active:opacity-60"
-                >
-                  <FiFilter size={16} />
-                  Все фильтры
-                </span>
-              </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Доступные тарифы 
+              <span className="text-base font-normal text-gray-600 ml-2">
+                ({filteredTariffs.length})
+              </span>
+            </h2>
+            
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">Сортировка:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-sm min-w-[140px] focus:ring-2 focus:ring-[#ee3c6b] focus:border-transparent"
+              >
+                <option value="popular">Популярные</option>
+                <option value="speed">Быстрые</option>
+                <option value="price-low">Подешевле</option>
+                <option value="price-high">Подороже</option>
+              </select>
+              
+              <button
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="lg:hidden inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-[#ee3c6b] hover:bg-gray-50 transition-colors"
+              >
+                <FiFilter size={16} />
+                Все фильтры
+              </button>
             </div>
+          </div>
 
-          {filteredTariffs.length > 0 ? (
+          {/* Tariffs Grid */}
+          {sortedTariffs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredTariffs.slice(0, visibleCount).map((tariff) => (
+              {sortedTariffs.slice(0, visibleCount).map((tariff) => (
                 <TariffCard
                   key={tariff.id}
                   tariff={tariff}
@@ -577,56 +752,67 @@ className={`px-4 py-2 rounded-full text-sm font-medium transition ${ isActiveCat
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">Тарифы не найдены</h3>
-              <p className="text-gray-600 mb-6">Попробуйте изменить параметры фильтрации</p>
-              <button
+            <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
+              <div className="text-gray-600 mb-4">Тарифы не найдены</div>
+              <button 
                 onClick={resetFilters}
-                className="btn-secondary"
+                className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all"
               >
                 Сбросить фильтры
               </button>
             </div>
           )}
-          {visibleCount < filteredTariffs.length && (
-            <div className="text-center mt-6">
-              <button className="btn-secondary" onClick={() => setVisibleCount(prev => Math.min(prev + 5, filteredTariffs.length))}>
+
+          {/* Load More Button */}
+          {visibleCount < sortedTariffs.length && (
+            <div className="text-center mt-8">
+              <button 
+                onClick={() => setVisibleCount(prev => prev + 6)}
+                className="bg-white border-2 border-[#ee3c6b] text-[#ee3c6b] px-8 py-3 rounded-xl font-medium hover:bg-[#ee3c6b] hover:text-white transition-all"
+              >
                 Показать ещё
               </button>
             </div>
           )}
-            <section className="mt-12 rounded-3xl bg-[#7000FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">
-              <div className="w-full flex flex-col gap-2 md:gap-4">
-                <h2 className="text-[28px] leading-[1.05] font-bold font-sans mb-2 md:mb-3 text-left text-white">Хотите быстро найти самый выгодный тариф?</h2>
-                <p className="text-[18px] leading-[1.2] font-normal font-sans mb-4 md:mb-6 text-left max-w-xl text-white">Подберите тариф с экспертом. Найдём для вас лучшее решение с учетом ваших пожеланий</p>
-                <SupportOnlyBlock>
-                  <TariffHelpForm />
-                </SupportOnlyBlock>
-              </div>
-            </section>
+
+          {/* Help Section */}
+          <section className="mt-12 rounded-2xl bg-gradient-to-r from-[#8e66e4] to-[#c1d8fb] p-8 text-white">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-xl md:text-2xl font-bold mb-4">Хотите быстро найти самый выгодный тариф?</h2>
+              <p className="text-base md:text-lg mb-6 opacity-90">Подберите тариф с экспертом. Найдём для вас лучшее решение с учетом ваших пожеланий</p>
+              
+              <SupportOnlyBlock>
+                <TariffHelpForm />
+              </SupportOnlyBlock>
+            </div>
+          </section>
         </div>
       </main>
 
+      {/* Additional Blocks */}
       <HowConnect onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
-      <Bonuses />
+      <Bonuses onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
       <PromoSlider onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
       <InfoBlockKrasnodar />
       <EquipmentBlock />
       <FaqBlock />
+      
       <SupportOnlyBlock isQuestionsBlock>
         <QuestionsBlock />
       </SupportOnlyBlock>
 
-      {/* модалки */}
-<SegmentationModal
-  isOpen={isSegmentationModalOpen}
-  onClose={() => setIsSegmentationModalOpen(false)}
-  onNewConnection={() => setIsConnectionModalOpen(true)}
-  onExistingConnection={() => setIsConnectionModalOpen(true)}
-/>       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+      {/* Modals */}
+      <SegmentationModal
+        isOpen={isSegmentationModalOpen}
+        onClose={() => setIsSegmentationModalOpen(false)}
+        onNewConnection={() => setIsConnectionModalOpen(true)}
+        onExistingConnection={() => setIsConnectionModalOpen(true)}
+      />
+      
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
       <ConnectionForm isOpen={isConnectionModalOpen} onClose={() => setIsConnectionModalOpen(false)} />
       <CallRequestModal isOpen={isCallRequestModalOpen} onClose={() => setIsCallRequestModalOpen(false)} />
+      
       <MobileFiltersDrawer
         open={isMobileFiltersOpen}
         onClose={() => setIsMobileFiltersOpen(false)}

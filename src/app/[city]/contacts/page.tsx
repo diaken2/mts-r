@@ -1,7 +1,8 @@
-import ContactsPage from '../../contacts/page';
+
 import { getAvailableCities, getCityData } from '@/lib/data-service';
 import { notFound } from 'next/navigation';
 import SetCityEffect from '@/components/layout/SetCityEffect';
+import ContactsClient from './ContactsClient';
 
 export const revalidate = 3600;
 
@@ -13,7 +14,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { city: string } }) {
   const data = await getCityData(params.city.toLowerCase());
   const name = data?.meta?.name || params.city;
-  return { title: `Контакты официального дилера Ростелеком` };
+  return { title: `Контакты официального дилера МТС` };
 }
 
 export default async function CityContactsPage({ params }: { params: { city: string } }) {
@@ -22,7 +23,7 @@ export default async function CityContactsPage({ params }: { params: { city: str
   return (
     <>
       <SetCityEffect city={data.meta.name} />
-      <ContactsPage />
+      <ContactsClient cityName={params.city} />
     </>
   );
 }

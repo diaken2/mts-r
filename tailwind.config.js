@@ -7,15 +7,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        'rt-primary': '#7700FF',
-        'rt-orange':  '#FF4F12',
-        'rt-black':   '#101828',
+        // Основные цвета МТС
+        'mts-red': '#E30613',      // Основной красный МТС
+        'mts-red-dark': '#B30000', // Темно-красный
+        'mts-black': '#000000',    // Черный
+        'mts-white': '#FFFFFF',    // Белый
+        'mts-gray': '#F5F5F5',     // Светло-серый
+        
+        // Устаревшие цвета (для совместимости)
+        'rt-primary': '#E30613',
+        'rt-orange':  '#E30613',
+        'rt-black':   '#000000',
         'rt-white':   '#FFFFFF',
-        'rt-cta':     '#FF4D06',
-        'rt-accent-blue': '#2B4FFF',
-        'rt-gray-bg': '#F0F1F4',
-        'rt-text':    '#1A1B22',
-        'rt-disabled-bg':   '#F0F1F4',
+        'rt-cta':     '#E30613',
+        'rt-accent-blue': '#000000',
+        'rt-gray-bg': '#F5F5F5',
+        'rt-text':    '#000000',
+        'rt-disabled-bg':   '#F5F5F5',
         'rt-disabled-text': '#B3B3B3',
       },
       borderRadius: {
@@ -26,7 +34,7 @@ export default {
         'rt-card': '0px 4px 12px rgba(0,0,0,0.05)',
       },
       fontFamily: {
-        sans: ['Rostelecom Basis', 'Arial', 'sans-serif'],
+        sans: ['MTS Basis', 'Arial', 'sans-serif'],
       },
     },
   },

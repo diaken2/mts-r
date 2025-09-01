@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, Suspense, useEffect } from "react";
+import React, { useState, useCallback, Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -30,32 +30,32 @@ import { useSupportOnly } from '@/context/SupportOnlyContext';
 const tariffsData = [
   {
     id: 1,
-    name: "Технологии доступа Макси 300",
+    name: "МТС Домашний интернет 300",
     type: "Интернет",
     speed: 300,
     technology: "GPON",
-    price: 800,
+    price: 750,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
   {
     id: 2,
-    name: "Технологии доступа Тест-драйв",
+    name: "МТС Домашний интернет 100",
     type: "Интернет",
     speed: 100,
     technology: "FTTB",
-    price: 700,
+    price: 650,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru",
       "Оборудование и услуга «Гарантия+» бесплатно 1 месяц"
     ],
     buttonColor: "purple"
@@ -69,9 +69,9 @@ const tariffsData = [
     tvChannels: 210,
     price: 850,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -82,14 +82,14 @@ const tariffsData = [
     speed: 100,
     technology: "FTTB",
     tvChannels: 210,
-    price: 800,
+    price: 750,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru",
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru",
       "Оборудование и услуга «Гарантия+» бесплатно 1 месяц"
     ],
     buttonColor: "purple"
@@ -108,8 +108,8 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Перенос остатков минут и ГБ"
@@ -119,18 +119,18 @@ const tariffsData = [
   },
   {
     id: 6,
-    name: "Технологии доступа Тест-драйв",
+    name: "МТС Домашний интернет 100",
     type: "Интернет",
     speed: 200,
     technology: "GPON",
-    price: 700,
+    price: 650,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru",
       "Оборудование и услуга «Гарантия+» бесплатно 1 месяц"
     ],
     isHit: true,
@@ -143,14 +143,14 @@ const tariffsData = [
     speed: 200,
     technology: "GPON",
     tvChannels: 210,
-    price: 800,
+    price: 750,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru",
       "Оборудование и услуга «Гарантия+» бесплатно 1 месяц"
     ],
     isHit: true,
@@ -164,14 +164,14 @@ const tariffsData = [
     technology: "GPON",
     mobileData: 40,
     mobileMinutes: 1000,
-    price: 800,
+    price: 750,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -192,7 +192,7 @@ const tariffsData = [
     discountPercentage: 50,
     features: [
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -206,14 +206,14 @@ const tariffsData = [
     technology: "FTTB",
     mobileData: 40,
     mobileMinutes: 1000,
-    price: 800,
+    price: 750,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -228,9 +228,9 @@ const tariffsData = [
     tvChannels: 210,
     price: 950,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -238,13 +238,13 @@ const tariffsData = [
     id: 12,
     name: "Игровой",
     type: "Интернет + ТВ",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     tvChannels: 210,
     price: 1150,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бонусы в играх от 4GAME",
       "Бонусы в играх от VK Play",
       "Бонусы в играх от Леста Игры"
@@ -259,9 +259,9 @@ const tariffsData = [
     technology: "GPON",
     price: 900,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -279,9 +279,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -291,15 +291,15 @@ const tariffsData = [
     id: 15,
     name: "Игровой",
     type: "Интернет",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     price: 950,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Бонусы в играх от 4GAME",
       "Бонусы в играх от VK Play",
       "Бонусы в играх от Леста Игры",
-      "Wi-Fi роутер — 150 ₽/мес в аренду"
+      "Wi-Fi роутер — 120 ₽/мес в аренду"
     ],
     buttonColor: "orange"
   },
@@ -312,9 +312,9 @@ const tariffsData = [
     tvChannels: 210,
     price: 850,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -331,9 +331,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -353,9 +353,9 @@ const tariffsData = [
     discountPeriod: "первые 2 месяца",
     discountPercentage: 50,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -370,9 +370,9 @@ const tariffsData = [
     tvChannels: 210,
     price: 950,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -390,9 +390,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -406,9 +406,9 @@ const tariffsData = [
     technology: "FTTB",
     price: 900,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
-      "+8 ГБ облачного хранилища от Mail.ru"
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
+      "+10 ГБ облачного хранилища от Mail.ru"
     ],
     buttonColor: "orange"
   },
@@ -420,14 +420,14 @@ const tariffsData = [
     technology: "FTTB",
     mobileData: 40,
     mobileMinutes: 1000,
-    price: 800,
+    price: 750,
     discountPrice: 0,
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -447,9 +447,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -464,8 +464,8 @@ const tariffsData = [
     tvChannels: 210,
     price: 1150,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "KION (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бонусы в играх от 4GAME",
       "Бонусы в играх от VK Play",
       "Бонусы в играх от Леста Игры"
@@ -480,8 +480,8 @@ const tariffsData = [
     technology: "FTTB",
     price: 950,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бонусы в играх от 4GAME",
       "Бонусы в играх от VK Play",
       "Бонусы в играх от Леста Игры"
@@ -492,16 +492,16 @@ const tariffsData = [
     id: 26,
     name: "Игровой 4в1",
     type: "Интернет + ТВ + Моб. связь",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     tvChannels: 210,
     mobileData: 40,
     mobileMinutes: 1000,
     price: 1400,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -514,15 +514,15 @@ const tariffsData = [
     id: 27,
     name: "Игровой 2в1",
     type: "Интернет + Моб. связь",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     mobileData: 40,
     mobileMinutes: 1000,
     price: 1200,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -545,7 +545,7 @@ const tariffsData = [
     discountPercentage: 50,
     features: [
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -564,9 +564,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -586,9 +586,9 @@ const tariffsData = [
     discountPeriod: "первые 2 месяца",
     discountPercentage: 50,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -608,9 +608,9 @@ const tariffsData = [
     discountPeriod: "первый месяц",
     discountPercentage: 100,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -626,9 +626,9 @@ const tariffsData = [
     mobileMinutes: 1000,
     price: 950,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam"
     ],
@@ -638,16 +638,16 @@ const tariffsData = [
     id: 33,
     name: "Игровой 4в1+",
     type: "Интернет + ТВ + Моб. связь",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     tvChannels: 210,
     mobileData: 40,
     mobileMinutes: 2000,
     price: 1600,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -660,15 +660,15 @@ const tariffsData = [
     id: 34,
     name: "Игровой 2в1+",
     type: "Интернет + Моб. связь",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     mobileData: 40,
     mobileMinutes: 1000,
     price: 1400,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -688,9 +688,9 @@ const tariffsData = [
     mobileMinutes: 1000,
     price: 1400,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -703,15 +703,15 @@ const tariffsData = [
     id: 36,
     name: "Игровой 2в1+",
     type: "Интернет + Моб. связь",
-    speed: 700,
+    speed: 650,
     technology: "GPON",
     mobileData: 40,
     mobileMinutes: 1000,
     price: 1400,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 150 ₽/мес в аренду",
+      "Wi-Fi роутер — 120 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -730,9 +730,9 @@ const tariffsData = [
     mobileMinutes: 1000,
     price: 1200,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -752,9 +752,9 @@ const tariffsData = [
     mobileMinutes: 2000,
     price: 1600,
     features: [
-      "Wink (25 000 фильмов и сериалов)",
+      "KION (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -773,9 +773,9 @@ const tariffsData = [
     mobileMinutes: 1000,
     price: 1400,
     features: [
-      "Wink на 180 дней (25 000 фильмов и сериалов)",
+      "KION на 180 дней (20 000 фильмов и сериалов)",
       "Перенос остатков минут и ГБ",
-      "Wi-Fi роутер — 100 ₽/мес в аренду",
+      "Wi-Fi роутер — 80 ₽/мес в аренду",
       "Бесплатный доступ к Одноклассники и ВКонтакте",
       "Бесплатный доступ к мессенджерам WhatsApp, Telegram, TamTam",
       "Бонусы в играх от 4GAME",
@@ -797,7 +797,7 @@ const defaultFilters = {
   wifiRouter: false,
   hitsOnly: false,
   connectionType: "apartment",
-  priceRange: [300, 1700],
+  priceRange: [300, 1650],
   speedRange: [50, 1000],
 };
 
@@ -872,7 +872,10 @@ const supportOptions = [
   "Оборудование",
   "Не работает интернет/ТВ"
 ];
-
+interface TimeSlot {
+  value: string;
+  label: string;
+}
 function TariffHelpForm() {
   const [step, setStep] = React.useState<null | 'connection' | 'support'>(null);
   const [houseType, setHouseType] = React.useState(houseTypes[0]);
@@ -885,18 +888,133 @@ function TariffHelpForm() {
   const router = useRouter();
   const { setSupportOnly } = useSupportOnly();
 
+  const [callTime, setCallTime] = useState('');
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+  const [shouldOpenUp, setShouldOpenUp] = useState(false);
+  const timeDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Генерация временных слотов
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const slots: TimeSlot[] = [];
+
+    // Определяем рабочее время (6:00-21:00)
+    const isWorkingHours = currentHour >= 6 && currentHour < 21;
+
+    if (!isWorkingHours) {
+      slots.push({
+        value: 'out-of-hours',
+        label: 'Перезвоним в рабочее время'
+      });
+      
+      for (let hour = 6; hour <= 11; hour++) {
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+      
+      setTimeSlots(slots);
+      setCallTime('out-of-hours');
+      return;
+    }
+
+    // Рабочее время
+    slots.push({
+      value: 'asap',
+      label: 'Перезвоним в течение 15 минут'
+    });
+
+    let slotHour = currentHour;
+    let slotMinute = Math.ceil(currentMinute / 15) * 15;
+    
+    if (slotMinute === 60) {
+      slotHour += 1;
+      slotMinute = 0;
+    }
+    
+    while (slotHour < 21 && slots.length < 8) {
+      let endMinute = slotMinute + 15;
+      let endHour = slotHour;
+      
+      if (endMinute >= 60) {
+        endHour += 1;
+        endMinute = endMinute - 60;
+      }
+      
+      if (endHour > 21 || (endHour === 21 && endMinute > 0)) {
+        break;
+      }
+      
+      slots.push({
+        value: `today-${slotHour}-${slotMinute}`,
+        label: `Сегодня ${slotHour}:${slotMinute.toString().padStart(2, '0')}-${endHour}:${endMinute.toString().padStart(2, '0')}`
+      });
+      
+      slotMinute += 15;
+      if (slotMinute >= 60) {
+        slotHour += 1;
+        slotMinute = 0;
+      }
+    }
+
+    if (slots.length < 8) {
+      for (let hour = 6; hour <= 11; hour++) {
+        if (slots.length >= 8) break;
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+    }
+
+    setTimeSlots(slots);
+    setCallTime('asap');
+  }, []);
+
+  useEffect(() => {
+    if (isTimeDropdownOpen && timeDropdownRef.current) {
+      const rect = timeDropdownRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setShouldOpenUp(spaceBelow < 350);
+    }
+  }, [isTimeDropdownOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
+        setIsTimeDropdownOpen(false);
+      }
+    };
+
+    if (isTimeDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isTimeDropdownOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitted(true);
 
     try {
+      const selectedSlot = timeSlots.find(slot => slot.value === callTime);
+      const callTimeText = selectedSlot?.label || callTime;
+
       const result = await submitLead({
         type: step === 'connection' ? 'Новое подключение' : 'Поддержка существующего абонента',
         name: name,
         phone: phone,
         houseType: houseType,
         supportValue: supportValue || undefined,
+        callTime: callTimeText,
       });
 
       if (result.success) {
@@ -940,8 +1058,8 @@ function TariffHelpForm() {
   if (!step) {
     return (
       <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <button className="bg-[#ff4d06] text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-[#ff7f2a]" onClick={() => setStep('connection')}>Новое подключение</button>
-        <button className="bg-transparent border-2 border-white text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-white hover:text-[#8000ff]" onClick={() => setStep('support')}>Я существующий абонент</button>
+        <button className="bg-mts-red hover:bg-mts-red-dark text-white font-bold rounded-full px-10 py-4 text-lg transition" onClick={() => setStep('connection')}>Новое подключение</button>
+        <button className="bg-transparent border-2 border-white text-white font-bold rounded-full px-10 py-4 text-lg transition hover:bg-white hover:text-[#7500ff]" onClick={() => setStep('support')}>Я существующий абонент</button>
       </div>
     );
   }
@@ -954,7 +1072,7 @@ function TariffHelpForm() {
           <div className="flex flex-row gap-8 items-center mb-2 overflow-x-auto pb-2">
             {houseTypes.map((type) => (
               <label key={type} className="flex items-center cursor-pointer select-none text-[16px] font-medium font-sans flex-shrink-0">
-                <span className={`w-7 h-7 flex items-center justify-center rounded-full border-2 mr-2 transition-all duration-150 ${houseType === type ? "border-[#FF4F12] bg-[#FF4F12]" : "border-gray-300 bg-white"}`}>
+                <span className={`w-7 h-7 flex items-center justify-center rounded-full border-2 mr-2 transition-all duration-150 ${houseType === type ? "border-mts-red bg-mts-red" : "border-gray-300 bg-white"}`}>
                   {houseType === type && (
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" fill="#fff" /></svg>
                   )}
@@ -997,16 +1115,58 @@ function TariffHelpForm() {
             {/* Кнопка */}
             <button
               type="submit"
-              className={`w-full md:w-[200px] h-[44px] rounded-full px-6 text-[16px] font-medium font-sans transition ml-0 md:ml-4 ${isFormValid && !submitted && !isSubmitting ? "bg-[#FF4F12] text-white" : "bg-[#FFD6C2] text-white cursor-not-allowed"}`}
+              className={`w-full md:w-[200px] h-[44px] rounded-full px-6 text-[16px] font-medium font-sans transition ml-0 md:ml-4 ${isFormValid && !submitted && !isSubmitting ? "bg-mts-red text-white" : "bg-[#FFD6C2] text-white cursor-not-allowed"}`}
               disabled={!isFormValid || submitted || isSubmitting}
             >
               {submitted ? 'Отправлено!' : isSubmitting ? 'Отправляем...' : 'Жду звонка'}
             </button>
           </div>
-          {/* Подпись под полем */}
-          <div className="flex items-center gap-2 mt-3 justify-start">
-            <span className="text-white text-[13px] font-normal font-sans">Перезвоним в течение 15 минут</span>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          {/* Выбор времени */}
+          <div className="relative mt-3" ref={timeDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+              className={`
+                flex items-center gap-2 justify-start text-left transition-all
+                text-white text-[13px] font-normal font-sans
+                ${isTimeDropdownOpen ? 'opacity-100' : 'opacity-80'}
+              `}
+            >
+              <span>
+                {timeSlots.find(slot => slot.value === callTime)?.label || 'Перезвоним в течение 15 минут'}
+              </span>
+              <svg className={`w-[18px] h-[18px] transition-transform ${isTimeDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {isTimeDropdownOpen && (
+              <div className={`
+                absolute left-0 right-auto mt-1 bg-white border border-gray-200 rounded-xl shadow-lg
+                z-10 max-h-60 overflow-y-auto
+                ${shouldOpenUp ? 'bottom-full mb-1' : 'top-full'}
+              `}>
+                {timeSlots.map((slot) => (
+                  <button
+                    key={slot.value}
+                    type="button"
+                    onClick={() => {
+                      setCallTime(slot.value);
+                      setIsTimeDropdownOpen(false);
+                    }}
+                    className={`
+                      w-full px-4 py-3 text-left transition-colors
+                      ${callTime === slot.value
+                        ? 'bg-[#ee3c6b] text-white'
+                        : 'text-gray-900 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    {slot.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {/* Юридическая строка */}
           <p className="text-[12px] font-light font-sans mt-2 text-left text-[#D8B5FF]">Отправляя заявку, вы соглашаетесь с <a href="#" className="underline">политикой обработки персональных данных</a></p>
@@ -1014,32 +1174,8 @@ function TariffHelpForm() {
       </>
     );
   }
-
-  // step === 'support'
-  return (
-    <div className="flex flex-col gap-4 items-center animate-fade-in">
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 w-full">
-        {supportOptions.map((opt) => (
-          <button key={opt} className={`px-7 py-3 rounded-full border-2 font-semibold text-base transition focus:outline-none flex-shrink-0 ${supportValue === opt ? "bg-[#ff4d06] border-[#ff4d06] text-white" : "border-white text-white bg-transparent"}`} onClick={() => setSupportValue(opt)}>{opt}</button>
-        ))}
-      </div>
-      {supportValue && (
-        <div className="bg-white/10 rounded-xl p-6 max-w-lg text-center">
-          <h3 className="text-xl font-bold mb-2 text-white">Вы являетесь действующим абонентом Ростелеком</h3>
-          <p className="mb-2 text-white/80">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
-          <div className="mb-2">
-            <span className="text-base text-white/80">Рекомендуем позвонить по номеру</span><br />
-            <a href="tel:88001000800" className="text-2xl md:text-3xl font-bold text-white hover:underline">8 800 100-08-00</a>
-            <div className="text-xs text-white/60">Звонок бесплатный по РФ</div>
-          </div>
-          <div className="text-base text-white/80">
-            или узнать информацию в <a href="#" className="underline text-white">личном кабинете</a>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
+
 
 // Компонент-обертка для использования useSearchParams
 function InternetTVPageContent() {
@@ -1063,15 +1199,31 @@ function InternetTVPageContent() {
   });
   const { isSupportOnly } = useSupportOnly();
   const [city, setCity] = useState("");
-
+ const [citySlug, setCitySlug]=useState('')
   useEffect(() => {
     setCity(getCityFromCookie());
   }, []);
-
+useEffect(()=>{
+const slug = city
+              .toLowerCase()
+              .replace(/^(г\.|пгт|село|аул|деревня|поселок|ст-ца|п\.)\s*/i, "")
+              .replace(/ё/g, "e")
+              .replace(/\s+/g, "-")
+              .replace(/[а-я]/g, (c: string) => {
+                const map: Record<string, string> = {
+                  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ж: "zh", з: "z", и: "i", й: "i",
+                  к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f",
+                  х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch", ы: "y", э: "e", ю: "yu", я: "ya"
+                };
+                return map[c] || "";
+              })
+              .replace(/[^a-z0-9-]/g, "");
+              setCitySlug(slug)
+},[city])
   // Мемоизированная фильтрация и сортировка тарифов
   const filteredTariffs = React.useMemo(() => {
     let filtered = tariffsData;
-    const isDefaultPrice = filters.priceRange[0] === 300 && filters.priceRange[1] === 1700;
+    const isDefaultPrice = filters.priceRange[0] === 300 && filters.priceRange[1] === 1650;
     const isDefaultSpeed = filters.speedRange[0] === 50 && filters.speedRange[1] === 1000;
     const hasActiveFilters = filters.internet || filters.tv || filters.mobile || filters.onlineCinema || filters.gameBonuses;
 
@@ -1097,7 +1249,7 @@ function InternetTVPageContent() {
             (filters.internet && tariff.type.includes("Интернет")) ||
             (filters.tv && tariff.type.includes("ТВ")) ||
             (filters.mobile && tariff.type.includes("Моб. связь")) ||
-            (filters.onlineCinema && tariff.features.some(f => f.includes("Wink"))) ||
+            (filters.onlineCinema && tariff.features.some(f => f.includes("KION"))) ||
             (filters.gameBonuses && tariff.features.some(f => f.includes("Игровой") || f.includes("Бонусы в играх")));
         }
         
@@ -1264,13 +1416,13 @@ function InternetTVPageContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div style={{background: "linear-gradient(90deg, #F26A2E 0%, #7B2FF2 100%)", padding: "20px 0 32px 0", color: "#fff"}} className="md:py-8 md:pb-12">
+      <div style={{background: "linear-gradient(90deg, #E30613 0%, #000000 100%)", padding: "20px 0 32px 0", color: "#fff"}} className="md:py-8 md:pb-12">
         <div style={{maxWidth: 1200, margin: "0 auto", padding: "0 16px"}}>
           <div style={{fontSize: 14, opacity: 0.8, marginBottom: 12}} className="md:text-base md:mb-4">
-            Ростелеком / {city} / <b>Интернет + ТВ</b>
+            МТС / {city} / <b>Интернет + ТВ</b>
           </div>
-          <h1 style={{fontSize: 28, fontWeight: 700, lineHeight: 1.1}} className="md:text-5xl">
-            Тарифы Ростелеком на интернет и ТВ в {city}
+          <h1 style={{fontSize: 28, fontWeight: 650, lineHeight: 1.1}} className="md:text-5xl">
+            Тарифы МТС на интернет и ТВ в {city}
           </h1>
         </div>
       </div>
@@ -1337,7 +1489,7 @@ function InternetTVPageContent() {
                 <Slider
                   range
                   min={300}
-                  max={1700}
+                  max={1650}
                   value={filters.priceRange}
                   onChange={(value) => Array.isArray(value) && handleFilterChange({ priceRange: value })}
                   trackStyle={[{ backgroundColor: '#FF6600' }]}
@@ -1386,7 +1538,7 @@ function InternetTVPageContent() {
                       px-4 py-2 rounded-full text-sm font-medium transition
                       ${activeCategory === category.id
                         ? 'bg-rt-cta text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                        : 'bg-gray-100 text-gray-650 hover:bg-gray-200'}
                     `}
                   >
                     {category.label}
@@ -1449,7 +1601,7 @@ function InternetTVPageContent() {
             ) : (
               <div className="text-center py-8">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">Тарифы не найдены</h3>
+                <h3 className="text-xl font-bold text-gray-650 mb-2">Тарифы не найдены</h3>
                 <p className="text-gray-600 mb-6">Попробуйте изменить параметры фильтрации</p>
                 <button 
                   onClick={() => {
@@ -1464,7 +1616,7 @@ function InternetTVPageContent() {
             )}
             
             {/* Блок подбора с экспертом */}
-            <section className="mt-12 rounded-3xl bg-[#7000FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">
+            <section className="mt-12 rounded-3xl bg-[#6500FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">
               <div className="w-full flex flex-col gap-2 md:gap-4">
                 <h2 className="text-[28px] leading-[1.05] font-bold font-sans mb-2 md:mb-3 text-left text-white">Хотите быстро найти самый выгодный тариф?</h2>
                 <p className="text-[18px] leading-[1.2] font-normal font-sans mb-4 md:mb-6 text-left max-w-xl text-white">Подберите тариф с экспертом. Найдём для вас лучшее решение с учетом ваших пожеланий</p>
@@ -1485,7 +1637,7 @@ function InternetTVPageContent() {
       <SupportOnlyBlock isQuestionsBlock={true}>
         <QuestionsBlock />
       </SupportOnlyBlock>
-      <Footer cityName={city} />
+      <Footer cityName={citySlug} />
       
       
       {/* Модальные окна */}

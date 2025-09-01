@@ -71,7 +71,7 @@
   }
 
   .p-hat__form-city {
-    @apply flex items-center gap-2 text-gray-700 hover:text-rt-cta transition-colors cursor-pointer;
+    @apply flex items-center gap-2 text-gray-650 hover:text-rt-cta transition-colors cursor-pointer;
   }
 
   .p-hat__form-input {
@@ -97,14 +97,22 @@
 
 /* Дополнительные утилиты */
 .text-gradient {
-  background: linear-gradient(135deg, #FF4D06 0%, #2B4FFF 100%);
+  background: linear-gradient(135deg, #E30613 0%, #000000 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #F36D3B 0%, #7B2AFB 100%);
+  background: linear-gradient(135deg, #E30613 0%, #000000 100%);
+}
+
+.bg-gradient-mts {
+  background: linear-gradient(180deg, #E30613 0%, #000000 100%);
+}
+
+.bg-gradient-mts-horizontal {
+  background: linear-gradient(90deg, #E30613 0%, #000000 100%);
 }
 
 .hover-lift {
@@ -228,29 +236,29 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @font-face {
-  font-family: 'Rostelecom Basis';
-  src: url('/fonts/RostelecomBasis-Regular.otf') format('opentype');
+  font-family: 'MTS Basis';
+  src: url('/fonts/MTSBasis-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Rostelecom Basis';
-  src: url('/fonts/RostelecomBasis-Medium.otf') format('opentype');
+  font-family: 'MTS Basis';
+  src: url('/fonts/MTSBasis-Medium.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Rostelecom Basis';
-  src: url('/fonts/RostelecomBasis-Bold.otf') format('opentype');
-  font-weight: 700;
+  font-family: 'MTS Basis';
+  src: url('/fonts/MTSBasis-Bold.otf') format('opentype');
+  font-weight: 650;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Rostelecom Basis';
-  src: url('/fonts/RostelecomBasis-Light.otf') format('opentype');
+  font-family: 'MTS Basis';
+  src: url('/fonts/MTSBasis-Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;

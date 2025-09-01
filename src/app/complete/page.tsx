@@ -21,7 +21,7 @@ export default function CompletePage() {
             Заявка отправлена!
           </h1>
           
-          <p className="text-xl text-gray-700 mb-12">
+          <p className="text-xl text-gray-650 mb-12">
             Специалист перезвонит в течение 15 минут для уточнения деталей
           </p>
 

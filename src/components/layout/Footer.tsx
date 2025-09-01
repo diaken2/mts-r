@@ -20,14 +20,14 @@ return cityName ? `/${cityName}${path}` : path;
         <div className="flex flex-col md:flex-row justify-between gap-12">
           {/* Логотип */}
           <div className="flex-shrink-0 mb-6">
-            <Logo href="/krasnodar/" />
+            <Logo href={getPrefixedHref(cityName,'')}/>
           </div>
 
           {/* Меню */}
           <div className="flex flex-col md:flex-row gap-12 flex-grow justify-between">
             {/* Колонка 1 */}
             <div className="space-y-2">
-              <a href="https://lk.rt.ru/" target="_blank" rel="noopener noreferrer" className="hover:underline block">
+              <a href="https://lk.mts.ru/" target="_blank" rel="noopener noreferrer" className="hover:underline block">
                 Личный кабинет
               </a>
               <Link href="/cities" className="hover:underline block">
@@ -63,12 +63,12 @@ return cityName ? `/${cityName}${path}` : path;
             {/* Колонка 3 */}
             <div>
               <Link href={getPrefixedHref(cityName, "/check")} className="font-bold hover:underline block mb-2">
-                Проверка Ростелеком по адресу
+                Проверка МТС по адресу
               </Link>
               {/* Ссылка "Оставить заявку" скрыта при режиме поддержки */}
               {!isSupportOnly && (
                 <Link href={getPrefixedHref(cityName, "/order")}className="font-bold hover:underline block">
-                  Оставить заявку на подключение Ростелеком
+                  Оставить заявку на подключение МТС
                 </Link>
               )}
             </div>
@@ -79,7 +79,7 @@ return cityName ? `/${cityName}${path}` : path;
         <div className="mt-10 border-t border-gray-300 pt-6 text-[#666] text-xs">
           <p className="mb-2">
             © 2025 Сайт не является средством массовой информации и действует на
-            основании партнёрского договора с Ростелеком.
+            основании партнёрского договора с МТС.
           </p>
           <Link href={getPrefixedHref(cityName, "/privacy")} className="hover:underline">
             Политика обработки персональных данных

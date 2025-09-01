@@ -1,5 +1,5 @@
+
 "use client";
-// src/components/ConnectionForm.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import InputMask from 'react-input-mask';
 import { useRouter } from 'next/navigation';
@@ -12,16 +12,25 @@ interface ConnectionFormProps {
   onClose: () => void;
 }
 
+interface TimeSlot {
+  value: string;
+  label: string;
+}
+
 export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps) {
   const [phone, setPhone] = useState('');
-  const [callTime, setCallTime] = useState('any');
+  const [callTime, setCallTime] = useState('');
   const [touched, setTouched] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+  const [shouldOpenUp, setShouldOpenUp] = useState(false);
   const router = useRouter();
   const { isSupportOnly } = useSupportOnly();
   const modalRef = useRef<HTMLDivElement>(null);
+  const timeDropdownRef = useRef<HTMLDivElement>(null);
 
   // Определение мобильного устройства
   useEffect(() => {
@@ -34,11 +43,95 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Генерация временных слотов
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const slots: TimeSlot[] = [];
+
+    // Определяем рабочее время (6:00-21:00)
+    const isWorkingHours = currentHour >= 6 && currentHour < 21;
+
+    if (!isWorkingHours) {
+      slots.push({
+        value: 'out-of-hours',
+        label: 'Перезвоним в рабочее время'
+      });
+      
+      for (let hour = 6; hour <= 11; hour++) {
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+      
+      setTimeSlots(slots);
+      setCallTime('out-of-hours');
+      return;
+    }
+
+    // Рабочее время
+    slots.push({
+      value: 'asap',
+      label: 'Перезвоним в течение 15 минут'
+    });
+
+    let slotHour = currentHour;
+    let slotMinute = Math.ceil(currentMinute / 15) * 15;
+    
+    if (slotMinute === 60) {
+      slotHour += 1;
+      slotMinute = 0;
+    }
+    
+    while (slotHour < 21 && slots.length < 8) {
+      let endMinute = slotMinute + 15;
+      let endHour = slotHour;
+      
+      if (endMinute >= 60) {
+        endHour += 1;
+        endMinute = endMinute - 60;
+      }
+      
+      if (endHour > 21 || (endHour === 21 && endMinute > 0)) {
+        break;
+      }
+      
+      slots.push({
+        value: `today-${slotHour}-${slotMinute}`,
+        label: `Сегодня ${slotHour}:${slotMinute.toString().padStart(2, '0')}-${endHour}:${endMinute.toString().padStart(2, '0')}`
+      });
+      
+      slotMinute += 15;
+      if (slotMinute >= 60) {
+        slotHour += 1;
+        slotMinute = 0;
+      }
+    }
+
+    if (slots.length < 8) {
+      for (let hour = 6; hour <= 11; hour++) {
+        if (slots.length >= 8) break;
+        slots.push({
+          value: `tomorrow-${hour}`,
+          label: `Завтра ${hour}:00-${hour + 1}:00`
+        });
+      }
+    }
+
+    setTimeSlots(slots);
+    setCallTime('asap');
+  }, []);
+
   // Обработка клика вне модалки
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
+      }
+      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
+        setIsTimeDropdownOpen(false);
       }
     };
 
@@ -61,26 +154,13 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-  
-  if (isSupportOnly) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-[1000] p-4">
-        <div className="bg-white rounded-xl shadow-lg w-full max-w-md relative flex flex-col items-center justify-center p-8">
-          <h2 className="text-2xl font-bold mb-4 text-center">Вы являетесь действующим абонентом Ростелеком</h2>
-          <p className="text-gray-600 mb-4 text-center">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
-          <div className="bg-blue-50 rounded-xl p-4 mb-4 text-center">
-            <p className="text-gray-700 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
-            <a href="tel:88001000800" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline">8 800 100-08-00</a>
-            <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
-          </div>
-          <div className="text-base text-center">
-            или узнать информацию в <a href="https://lk.rt.ru/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-700">личном кабинете</a>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (isTimeDropdownOpen && timeDropdownRef.current) {
+      const rect = timeDropdownRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setShouldOpenUp(spaceBelow < 350);
+    }
+  }, [isTimeDropdownOpen]);
 
   const isValidPhone = /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(phone);
 
@@ -93,12 +173,8 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
     setSubmitted(true);
 
     try {
-      const callTimeText = {
-        any: 'Перезвоним в рабочее время',
-        morning: 'Утром (9:00 - 12:00)',
-        afternoon: 'Днем (12:00 - 17:00)',
-        evening: 'Вечером (17:00 - 20:00)'
-      }[callTime];
+      const selectedSlot = timeSlots.find(slot => slot.value === callTime);
+      const callTimeText = selectedSlot?.label || callTime;
 
       const result = await submitLead({
         type: 'Заявка на подключение',
@@ -110,18 +186,17 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
         setTimeout(() => {
           setSubmitted(false);
           setPhone('');
-          setCallTime('any');
+          setCallTime('');
           setTouched(false);
           onClose();
           router.push('/complete');
         }, 2000);
       } else {
         console.error('Failed to submit lead:', result.error);
-        // В случае ошибки все равно показываем успех пользователю
         setTimeout(() => {
           setSubmitted(false);
           setPhone('');
-          setCallTime('any');
+          setCallTime('');
           setTouched(false);
           onClose();
           router.push('/complete');
@@ -129,11 +204,10 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
       }
     } catch (error) {
       console.error('Error submitting lead:', error);
-      // В случае ошибки все равно показываем успех пользователю
       setTimeout(() => {
         setSubmitted(false);
         setPhone('');
-        setCallTime('any');
+        setCallTime('');
         setTouched(false);
         onClose();
         router.push('/complete');
@@ -143,109 +217,169 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-[1000] p-4">
-      <div
-        className={
-          isMobile
-            ? "fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-[1001] overflow-y-auto"
-            : "w-[500px] max-w-[90vw] bg-white rounded-[24px] relative shadow-xl"
-        }
-        style={isMobile ? { maxHeight: '90vh' } : {}}
-        ref={modalRef}
-      >
-        {isMobile && (
-          <div className="sticky top-0 bg-white py-4 px-4 flex justify-center border-b z-10">
-            <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-          </div>
-        )}
-        
-        <button 
-          onClick={onClose}
-          className={
-            isMobile
-              ? "absolute top-4 right-4 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center z-10"
-              : "absolute top-6 right-6 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center"
-          }
-        >
-          ×
-        </button>
+  if (!isOpen) return null;
 
-        <div className={isMobile ? "p-4" : "p-8"}>
-          <h2 className="text-2xl md:text-[28px] font-bold text-[#1B1B1B] mb-2 text-center">
-            Заявка на подключение
-          </h2>
-          <p className="mb-6 text-center text-[#6E6E6E] text-lg">
-            Перезвоним для уточнения деталей<br/>и согласования времени установки
-          </p>
-          
+  const overlayClass = `fixed inset-0 bg-black bg-opacity-50 flex ${isMobile ? 'items-end' : 'items-center'} justify-center z-50 ${isMobile ? 'p-0' : 'p-4'} backdrop-blur-sm`;
+
+  const modalClass = `
+    bg-white ${isMobile ? 'rounded-t-3xl rounded-b-none' : 'rounded-3xl'} shadow-2xl w-full ${isMobile ? 'max-w-none' : 'max-w-lg'} ${isMobile ? '' : 'mx-auto'} relative
+    transform transition-all duration-300
+    ${isOpen ? (isMobile ? 'translate-y-0 opacity-100' : 'scale-100 opacity-100') : (isMobile ? 'translate-y-full opacity-0' : 'scale-95 opacity-0')}
+  `;
+
+  return (
+    <div className={overlayClass}>
+      <div
+        ref={modalRef}
+        className={modalClass}
+      >
+        {/* Заголовок */}
+        <div className="p-8">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Заявка на{' '}
+              <span className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] bg-clip-text text-transparent">
+                подключение
+              </span>
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Перезвоним для уточнения деталей и согласования времени
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Поле телефона */}
             <div>
-              <label className="block text-[#1B1B1B] mb-2 font-medium text-lg">
-                Укажите номер телефона
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Номер телефона
               </label>
-              <div className={`flex items-center w-full rounded-[28px] border-2 bg-white px-4 py-3 transition-all ${
-                touched && !isValidPhone 
-                  ? 'border-red-500 focus-within:border-red-500' 
-                  : 'border-[#C5C5C5] focus-within:border-[#FF4D15] focus-within:ring-4 focus-within:ring-[#FFF4F0]'
-              }`}>
-                <span className="text-lg font-medium text-[#1B1B1B] select-none mr-3">+7</span>
+              <div className={`
+                flex items-center rounded-xl border-2 px-4 py-3 transition-all
+                ${touched && !isValidPhone
+                  ? 'border-red-500 ring-2 ring-red-500/20'
+                  : 'border-gray-300 focus-within:border-[#ee3c6b] focus-within:ring-2 focus-within:ring-[#ee3c6b]/20'
+                }
+              `}>
+                <span className="text-gray-600 font-medium mr-2">+7</span>
                 <InputMask
                   mask="(999) 999-99-99"
-                  maskChar={null}
                   value={phone.replace('+7 ', '')}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone('+7 ' + e.target.value)}
                   onBlur={() => setTouched(true)}
-                  type="tel"
-                  autoComplete="tel"
-                  className="flex-1 outline-none bg-transparent text-lg placeholder-[#B3B3B3]"
+                  className="flex-1 outline-none text-lg placeholder-gray-400"
                   placeholder="(___) ___-__-__"
                 />
               </div>
               {touched && !isValidPhone && (
-                <div className="text-red-500 text-sm mt-2 flex items-center">
-                  <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
-                  Неверный формат номера
+                  Введите корректный номер
+                </p>
+              )}
+            </div>
+
+            {/* Выбор времени */}
+            <div className="relative" ref={timeDropdownRef}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Время звонка
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+                className={`
+                  w-full flex items-center justify-between px-4 py-3 rounded-xl border-2
+                  text-left transition-all
+                  ${isTimeDropdownOpen
+                    ? 'border-[#ee3c6b] ring-2 ring-[#ee3c6b]/20'
+                    : 'border-gray-300 hover:border-gray-400'
+                  }
+                `}
+              >
+                <span className="text-gray-900">
+                  {timeSlots.find(slot => slot.value === callTime)?.label || 'Выберите время'}
+                </span>
+                <svg className={`w-5 h-5 text-gray-400 transition-transform ${isTimeDropdownOpen ? 'rotate-180' : ''}`} 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isTimeDropdownOpen && (
+                <div className={`
+                  absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg
+                  z-10 max-h-60 overflow-y-auto
+                  ${shouldOpenUp ? 'bottom-full mb-1' : 'top-full'}
+                `}>
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot.value}
+                      type="button"
+                      onClick={() => {
+                        setCallTime(slot.value);
+                        setIsTimeDropdownOpen(false);
+                      }}
+                      className={`
+                        w-full px-4 py-3 text-left transition-colors
+                        ${callTime === slot.value
+                          ? 'bg-[#ee3c6b] text-white'
+                          : 'text-gray-900 hover:bg-gray-50'
+                        }
+                      `}
+                    >
+                      {slot.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            <div>
-              <label className="block text-[#1B1B1B] mb-2 font-medium text-lg">
-                Время звонка
-              </label>
-              <select
-                className="w-full h-14 rounded-[28px] border-2 border-[#C5C5C5] bg-white px-4 text-lg focus:border-[#FF4D15] focus:ring-4 focus:ring-[#FFF4F0] outline-none transition-all"
-                value={callTime}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCallTime(e.target.value)}
-              >
-                <option value="any">Перезвоним в рабочее время</option>
-                <option value="morning">Утром (9:00 - 12:00)</option>
-                <option value="afternoon">Днем (12:00 - 17:00)</option>
-                <option value="evening">Вечером (17:00 - 20:00)</option>
-              </select>
-            </div>
-
+            {/* Кнопка отправки */}
             <button
               type="submit"
-              className={`w-full h-14 rounded-[28px] font-semibold text-lg transition-all duration-300 ${
-                isValidPhone && !submitted
-                  ? 'bg-[#FF4D15] text-white hover:bg-[#E34612] shadow-md hover:shadow-lg transform hover:-translate-y-0.5' 
-                  : 'bg-[#BFBFBF] text-white cursor-not-allowed'
-              }`}
               disabled={!isValidPhone || submitted}
+              className={`
+                w-full bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white font-semibold
+                py-4 px-6 rounded-xl transition-all duration-300
+                hover:shadow-lg transform hover:-translate-y-0.5
+                disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              `}
             >
-              {submitted ? 'Отправлено!' : 'Получить консультацию'}
+              {submitted ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Отправляем...
+                </div>
+              ) : (
+                'Получить консультацию'
+              )}
             </button>
           </form>
-          
-          <p className="text-xs text-[#6E6E6E] text-center mt-6">
-            Отправляя, вы соглашаетесь с <Link href="/privacy" className="underline text-[#174A8D]">политикой обработки данных</Link>
+
+          {/* Политика конфиденциальности */}
+          <p className="text-xs text-gray-500 text-center mt-6">
+            Отправляя заявку, вы соглашаетесь с{' '}
+            <Link href="/privacy" className="text-[#ee3c6b] hover:text-[#ff0032] underline transition-colors">
+              политикой обработки данных
+            </Link>
           </p>
         </div>
+
+        {/* Кнопка закрытия */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 text-gray-600
+                   hover:bg-gray-200 transition-colors flex items-center justify-center"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     </div>
   );
-} 
+}

@@ -136,13 +136,13 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
         className={
           isMobile
             ? "fixed inset-0 bg-white z-[1001] overflow-y-auto"
-            : "w-[800px] max-w-[90vw] bg-white rounded-[24px] relative shadow-xl"
+            : "w-[750px] max-w-[90vw] bg-white rounded-2xl relative shadow-xl"
         }
         style={isMobile ? {} : { minHeight: 480, maxHeight: '90vh' }}
         ref={modalRef}
       >
         {isMobile && (
-          <div className="sticky top-0 bg-white py-4 px-4 flex justify-center border-b z-10">
+          <div className="sticky top-0 bg-white py-4 px-4 flex justify-center border-b border-gray-200 z-10">
             <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
           </div>
         )}
@@ -151,17 +151,17 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
           onClick={onClose}
           className={
             isMobile
-              ? "absolute top-4 right-4 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center z-10"
-              : "absolute top-6 right-6 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center"
+              ? "absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 text-gray-600 text-xl border-0 cursor-pointer hover:bg-gray-200 transition-colors flex items-center justify-center z-10"
+              : "absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 text-gray-600 text-xl border-0 cursor-pointer hover:bg-gray-200 transition-colors flex items-center justify-center"
           }
         >
           ×
         </button>
 
-        <div className={isMobile ? "p-4" : "p-8"}>
+        <div className={isMobile ? "p-4" : "p-6"}>
           {/* Header */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-[28px] font-bold text-[#1B1B1B]">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
               Введите населённый пункт
             </h2>
           </div>
@@ -175,11 +175,11 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Оренбург"
-                className="w-full h-14 rounded-[28px] border-2 border-[#C5C5C5] bg-white px-6 text-lg focus:border-[#FF4D15] focus:ring-4 focus:ring-[#FFF4F0] outline-none pr-12 transition-all"
+                className="w-full h-12 rounded-xl border border-gray-300 bg-white px-4 text-base focus:border-[#ee3c6b] focus:ring-2 focus:ring-[#fff2f6] outline-none pr-10 transition-all"
               />
               {query && (
                 <button
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   onClick={() => setQuery('')}
                   tabIndex={-1}
                   aria-label="Очистить"
@@ -199,26 +199,26 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
               {query.trim() ? (
                 // Результаты поиска городов
                 <div>
-                  <h3 className="px-4 py-2 text-sm font-medium text-[#6E6E6E] mb-2">
+                  <h3 className="px-3 py-2 text-sm font-medium text-gray-600 mb-2">
                     Результаты поиска ({searchResults.length})
                   </h3>
                   <ul className="space-y-1">
                     {searchResults.map((result, index) => (
                       <li key={`${result.city}-${result.regionId}-${index}`}>
                         <button
-                          className="w-full px-4 py-3 text-left text-base font-medium text-[#1B1B1B] hover:bg-[#FFF4F0] hover:text-[#FF4D15] transition-all duration-300 rounded-lg"
+                          className="w-full px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-[#fff2f6] hover:text-[#ee3c6b] transition-all duration-300 rounded-lg"
                           onClick={() => onSelect(result.city, result.region)}
                           role="option"
                           aria-selected={false}
                         >
                           <div className="font-medium">{result.city}</div>
-                          <div className="text-sm text-[#6E6E6E]">{result.region}</div>
+                          <div className="text-sm text-gray-600">{result.region}</div>
                         </button>
                       </li>
                     ))}
                   </ul>
                   {searchResults.length === 0 && (
-                    <div className="px-4 py-8 text-center text-[#6E6E6E]">
+                    <div className="px-3 py-6 text-center text-gray-600">
                       Город не найден
                     </div>
                   )}
@@ -236,10 +236,10 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                           <li key={region.id} className="space-y-1">
                             {/* Регион с кнопкой раскрытия */}
                             <button
-                              className={`w-full px-4 py-4 text-left text-base font-medium transition-all duration-300 rounded-lg flex items-center justify-between ${
+                              className={`w-full px-3 py-3 text-left text-base font-medium transition-all duration-300 rounded-lg flex items-center justify-between ${
                                 selectedRegionId === region.id 
-                                  ? 'text-[#FF4D15] bg-[#FFF4F0]' 
-                                  : 'text-[#1B1B1B] hover:bg-gray-50'
+                                  ? 'text-[#ee3c6b] bg-[#fff2f6]' 
+                                  : 'text-gray-900 hover:bg-gray-50'
                               }`}
                               onClick={() => toggleRegion(region.id)}
                               role="option"
@@ -257,7 +257,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                                 {cities.map(city => (
                                   <li key={city}>
                                     <button
-                                      className="w-full px-4 py-3 text-left text-base font-medium text-[#1B1B1B] hover:bg-[#FFF4F0] hover:text-[#FF4D15] transition-all duration-300 rounded-lg"
+                                      className="w-full px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-[#fff2f6] hover:text-[#ee3c6b] transition-all duration-300 rounded-lg"
                                       onClick={() => onSelect(city, region.name)}
                                       role="option"
                                       aria-selected={false}
@@ -282,10 +282,10 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                       {letterGroup.areas.map(region => (
                         <li
                           key={region.id}
-                          className={`px-4 py-4 cursor-pointer text-base font-medium transition-all duration-300 rounded-lg mx-2 ${
+                          className={`px-3 py-3 cursor-pointer text-base font-medium transition-all duration-300 rounded-lg mx-1 ${
                             selectedRegionId === region.id 
-                              ? 'text-[#FF4D15] bg-[#FFF4F0]' 
-                              : 'text-[#1B1B1B] hover:bg-gray-50'
+                              ? 'text-[#ee3c6b] bg-[#fff2f6]' 
+                              : 'text-gray-900 hover:bg-gray-50'
                           }`}
                           onClick={() => setSelectedRegionId(region.id)}
                           role="option"
@@ -310,7 +310,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                   {filteredCities.length > 0 ? filteredCities.map(city => (
                     <li
                       key={city}
-                      className="px-4 py-4 cursor-pointer text-base font-medium text-[#1B1B1B] hover:bg-[#FFF4F0] hover:text-[#FF4D15] transition-all duration-300 rounded-lg mx-2"
+                      className="px-3 py-3 cursor-pointer text-base font-medium text-gray-900 hover:bg-[#fff2f6] hover:text-[#ee3c6b] transition-all duration-300 rounded-lg mx-1"
                       onClick={() => onSelect(city, activeRegion.name)}
                       role="option"
                       aria-selected={false}
@@ -318,7 +318,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                       {city}
                     </li>
                   )) : (
-                    <li className="px-4 py-8 text-gray-400 text-center">Нет городов</li>
+                    <li className="px-3 py-6 text-gray-400 text-center">Нет городов</li>
                   )}
                 </ul>
               </div>
@@ -328,4 +328,4 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
       </div>
     </div>
   );
-} 
+}

@@ -1,44 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# МТС Тарифы - Сайт подключения услуг МТС
 
-## Getting Started
+Это проект сайта для подключения услуг МТС (интернет, ТВ, мобильная связь) в различных городах России.
 
-First, run the development server:
+## Технологии
 
+- [Next.js](https://nextjs.org) - React фреймворк
+- TypeScript
+- Tailwind CSS
+- React Icons
+- Swiper
+
+## Запуск проекта
+
+1. Установите зависимости:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Запустите сервер разработки:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Откройте [http://localhost:3000](http://localhost:3000) в браузере
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Структура проекта
 
-## Learn More
+- `src/app/` - Страницы приложения (Next.js App Router)
+- `src/components/` - React компоненты
+- `src/context/` - React контексты
+- `src/lib/` - Утилиты и сервисы
+- `data/cities/` - JSON файлы с данными городов и тарифов
+- `public/` - Статические файлы (изображения, иконки)
 
-To learn more about Next.js, take a look at the following resources:
+## Функциональность
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Выбор города и услуги
+- Просмотр тарифов МТС
+- Проверка возможности подключения по адресу
+- Оформление заявки на подключение
+- Контактная информация
+- Адаптивный дизайн
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Генерация данных городов
 
-## Deploy on Vercel
+Для генерации файлов городов используйте:
+```bash
+npm run generate:cities
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Деплой
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Проект готов к деплою на Vercel или другие платформы.
 
-## 3.3 Поле «Имя»
-- Допустимы только буквы кириллицы, не менее 2 символов. Без цифр и спецсимволов.
-- При ошибке — красная рамка и сообщение «Введите корректное имя».
+## Лицензия
 
-## 3.4 Селектор времени звонка
-- Выпадающий список (dropdown), по клику на текст «в течение 15 минут» справа от поля (это не input и не кнопка).
-- Если dropdown расположен у нижнего края модалки — раскрытие должно происходить вверх.
+Проект создан для партнерских отношений с ПАО «МТС».

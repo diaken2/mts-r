@@ -4,9 +4,9 @@ import React from 'react';
 
 export default function PromoBlock() {
   return (
-    <section className="mt-8 bg-gradient-to-r from-[#ff4f12] to-[#7800ff] text-white rounded-xl p-8">
+    <section className="mt-8 bg-gradient-mts-horizontal text-white rounded-xl p-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Акции Ростелеком</h2>
+        <h2 className="text-2xl font-bold mb-4">Акции МТС</h2>
         <p className="mb-6">
           Подключите тариф с акционной ценой
         </p>

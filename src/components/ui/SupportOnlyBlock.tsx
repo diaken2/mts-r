@@ -42,7 +42,7 @@ export default function SupportOnlyBlock({ children, isQuestionsBlock = false }:
         </div>
         
         <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-          Вы являетесь действующим абонентом Ростелеком
+          Вы являетесь действующим абонентом МТС
         </h3>
         
         <p className="text-gray-600 mb-6 leading-relaxed">
@@ -50,14 +50,14 @@ export default function SupportOnlyBlock({ children, isQuestionsBlock = false }:
         </p>
         
         <div className="bg-blue-50 rounded-xl p-4 mb-6">
-          <p className="text-gray-700 mb-2 font-medium">
+          <p className="text-gray-650 mb-2 font-medium">
             Рекомендуем позвонить по номеру
           </p>
           <a 
-            href="tel:88001000800" 
+            href="tel:87501000750" 
             className="text-2xl md:text-3xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline"
           >
-            8 800 100-08-00
+            8 750 100-08-00
           </a>
           <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
         </div>
@@ -65,10 +65,10 @@ export default function SupportOnlyBlock({ children, isQuestionsBlock = false }:
         <div className="text-sm text-gray-500">
           или узнать информацию в{' '}
           <a 
-            href="https://lk.rt.ru/" 
+            href="https://lk.mts.ru/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-blue-600 underline hover:text-blue-700"
+            className="text-blue-600 underline hover:text-blue-650"
           >
             личном кабинете
           </a>

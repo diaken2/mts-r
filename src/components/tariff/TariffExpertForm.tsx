@@ -66,15 +66,15 @@ export default function TariffExpertForm({ isOpen, onClose }: TariffExpertFormPr
     return (
       <div className="fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-[1000] p-4">
         <div className="bg-white rounded-xl shadow-lg w-full max-w-md relative flex flex-col items-center justify-center p-8">
-          <h2 className="text-2xl font-bold mb-4 text-center">Вы являетесь действующим абонентом Ростелеком</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Вы являетесь действующим абонентом МТС</h2>
           <p className="text-gray-600 mb-4 text-center">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
           <div className="bg-blue-50 rounded-xl p-4 mb-4 text-center">
-            <p className="text-gray-700 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
-            <a href="tel:88001000800" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline">8 800 100-08-00</a>
+            <p className="text-gray-650 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
+            <a href="tel:87501000750" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline">8 750 100-08-00</a>
             <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
           </div>
           <div className="text-base text-center">
-            или узнать информацию в <a href="https://lk.rt.ru/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-700">личном кабинете</a>
+            или узнать информацию в <a href="https://lk.mts.ru/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-650">личном кабинете</a>
           </div>
         </div>
       </div>

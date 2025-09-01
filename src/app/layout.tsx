@@ -7,8 +7,8 @@ import { CityProvider } from '@/context/CityContext';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ростелеком - Подключение интернета в России",
-  description: "Подключите интернет Ростелеком в России. Выгодные тарифы, быстрая установка, надежное соединение.",
+  title: "МТС - Подключение интернета в России",
+  description: "Подключите интернет МТС в России. Выгодные тарифы, быстрая установка, надежное соединение.",
 };
 
 export default function RootLayout({

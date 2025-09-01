@@ -1,10 +1,10 @@
 import ContactsBlock from "@/components/blocks/ContactsBlock";
  export async function generateMetadata({ params }: { params: { city: string } }) {
 
-    return { title: `Контакты официального дилера Ростелеком` };
+    return { title: `Контакты официального дилера МТС` };
   }
 
-export default function ContactsPage() {
+export default function ContactsPage({cityName}:any) {
   
-  return <ContactsBlock/>
+  return <ContactsBlock cityName={cityName}/>
 } 

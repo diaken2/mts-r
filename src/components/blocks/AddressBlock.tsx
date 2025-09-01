@@ -22,17 +22,17 @@ const AddressBlock = ({ onFindTariffs, city }: AddressBlockProps) => {
   };
 
   return (
-    <section className="bg-gradient-to-r from-[#ed6a40] to-[#7c2bf6] py-16">
+    <section className="bg-gradient-mts-horizontal py-16">
       <div className="container mx-auto px-4">
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-white mb-6">Подключите Ростелеком {cityLabel}</h1>
+          <h1 className="text-4xl font-bold text-white mb-6">Подключите МТС {cityLabel}</h1>
           <p className="text-xl text-white opacity-80 mb-12">
             Интернет, ТВ, Мобильная связь и Умный дом
           </p>
           <div className="bg-white rounded-2xl shadow-md p-8 max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-1">
-                <div className="flex items-center text-gray-700 mb-4">
+                <div className="flex items-center text-gray-650 mb-4">
                   <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 0 0-5 2.5 2.5z"/>
                   </svg>
@@ -64,7 +64,7 @@ const AddressBlock = ({ onFindTariffs, city }: AddressBlockProps) => {
               <div className="flex flex-col">
                 <button 
                   onClick={handleFind}
-                  className="bg-gradient-to-r from-[#ff4f12] to-[#7800ff] hover:opacity-90 text-white font-bold py-4 px-8 rounded-full transition duration-300"
+                  className="bg-gradient-to-r from-mts-red to-mts-black hover:opacity-90 text-white font-bold py-4 px-8 rounded-full transition duration-300"
                 >
                   Найти тарифы
                 </button>

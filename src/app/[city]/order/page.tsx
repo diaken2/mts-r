@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { city: string } }) {
   const data = await getCityData(params.city.toLowerCase());
   const name = data?.meta?.name || params.city;
-  return { title: `Заявка на подключение к Ростелеком — подать заявку онлайн в Ростелеком.` };
+  return { title: `Заявка на подключение к МТС — подать заявку онлайн в МТС.` };
 }
 
 export default async function CityOrderPage({ params }: { params: { city: string } }) {

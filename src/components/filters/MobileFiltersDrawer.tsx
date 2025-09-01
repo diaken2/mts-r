@@ -130,7 +130,7 @@ const MobileFiltersDrawer: React.FC<MobileFiltersDrawerProps> = ({
             <Slider
               range
               min={300}
-              max={1700}
+              max={1650}
               value={filters.priceRange}
               onChange={(value) => Array.isArray(value) && onFiltersChange({ priceRange: value })}
               trackStyle={[{ backgroundColor: '#FF6600' }]}
@@ -161,13 +161,13 @@ const MobileFiltersDrawer: React.FC<MobileFiltersDrawerProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={onClear}
-                className="py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+                className="py-3 px-4 border border-gray-300 rounded-lg text-gray-650 font-medium hover:bg-gray-50"
               >
                 Очистить
               </button>
               <button
                 onClick={onApply}
-                className="py-3 px-4 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600"
+                className="py-3 px-4 bg-mts-red hover:bg-mts-red-dark text-white rounded-lg font-medium"
               >
                 Применить
               </button>

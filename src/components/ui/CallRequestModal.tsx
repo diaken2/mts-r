@@ -3,6 +3,7 @@ import InputMask from "react-input-mask";
 import { useRouter } from 'next/navigation';
 import { submitLead } from '@/lib/submitLead';
 import { useSupportOnly } from '@/context/SupportOnlyContext';
+import { useCity } from '@/context/CityContext'; // Импортируем контекст города
 
 interface CallRequestModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const [shouldOpenUp, setShouldOpenUp] = useState(false);
   const { setSupportOnly, isSupportOnly } = useSupportOnly();
+  const { city } = useCity(); // Используем город из контекста
 
   // Определение мобильного устройства и автофокус
   useEffect(() => {
@@ -259,31 +261,20 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
     }
   };
 
-  // Подпись под кнопкой
-  const selectedSlotLabel = timeSlots.find(slot => slot.value === selectedTime)?.label;
-  let callTimeNote = '';
-  if (selectedTime === 'asap') {
-    callTimeNote = 'Перезвоним в течение 15 минут';
-  } else if (selectedTime === 'out-of-hours') {
-    callTimeNote = 'Перезвоним в рабочее время';
-  } else if (selectedSlotLabel) {
-    callTimeNote = `Мы позвоним вам: ${selectedSlotLabel}`;
-  }
-
   if (!isOpen) return null;
   if (isSupportOnly) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-lg w-full max-w-md relative flex flex-col items-center justify-center p-8">
-          <h2 className="text-2xl font-bold mb-4 text-center">Вы являетесь действующим абонентом Ростелеком</h2>
+        <div className="bg-white rounded-2xl shadow-lg w-full max-w-md relative flex flex-col items-center justify-center p-8">
+          <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">Вы являетесь действующим абонентом МТС</h2>
           <p className="text-gray-600 mb-4 text-center">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
-          <div className="bg-blue-50 rounded-xl p-4 mb-4 text-center">
-            <p className="text-gray-700 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
-            <a href="tel:88001000800" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline">8 800 100-08-00</a>
-            <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
+          <div className="bg-gray-50 rounded-xl p-4 mb-4 text-center w-full">
+            <p className="text-gray-800 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
+            <a href="tel:87501000750" className="text-2xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors">8 750 100-08-00</a>
+            <p className="text-sm text-gray-500">Эксклюзивная линия для клиентов</p>
           </div>
-          <div className="text-base text-center">
-            или узнать информацию в <a href="https://lk.rt.ru/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-700">личном кабинете</a>
+          <div className="text-base text-center text-gray-600">
+            или узнать информацию в <a href="https://lk.mts.ru/" target="_blank" rel="noopener noreferrer" className="text-[#ee3c6b] underline hover:text-[#ff0032] transition-colors">личном кабинете</a>
           </div>
         </div>
       </div>
@@ -296,13 +287,13 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
         className={
           isMobile
             ? "fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-[1001] overflow-y-auto"
-            : "w-[560px] max-w-[90vw] bg-white rounded-[24px] p-8 md:p-10 relative shadow-xl"
+            : "w-full max-w-md bg-white rounded-2xl p-6 md:p-8 relative shadow-xl"
         }
         style={isMobile ? { maxHeight: '90vh' } : {}}
         ref={timeDropdownRef}
       >
         {isMobile && (
-          <div className="sticky top-0 bg-white py-4 px-4 flex justify-center border-b z-10">
+          <div className="sticky top-0 bg-white py-4 px-4 flex justify-center border-b border-gray-200 z-10">
             <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
           </div>
         )}
@@ -311,8 +302,8 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
           onClick={onClose}
           className={
             isMobile
-              ? "absolute top-4 right-4 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center z-10"
-              : "absolute top-6 right-6 w-10 h-10 rounded-full bg-[#E9E9E9] text-[#6E6E6E] text-xl border-0 cursor-pointer hover:bg-[#DCDCDC] transition-colors flex items-center justify-center"
+              ? "absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 text-gray-600 text-xl border-0 cursor-pointer hover:bg-gray-200 transition-colors flex items-center justify-center z-10"
+              : "absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 text-gray-600 text-xl border-0 cursor-pointer hover:bg-gray-200 transition-colors flex items-center justify-center"
           }
         >
           ×
@@ -321,8 +312,8 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
         <div className={isMobile ? "p-4" : ""}>
           {step === 'type' && (
             <div>
-              <h2 className="text-2xl md:text-[28px] font-bold text-[#1B1B1B] mb-6">Вас интересует?</h2>
-              <div className="space-y-6 mb-8">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Вас интересует?</h2>
+              <div className="space-y-4 mb-8">
                 <label className="flex items-start cursor-pointer group">
                   <div className="relative mr-4 mt-1">
                     <input
@@ -333,10 +324,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                       onChange={() => setRequestType('new')}
                       className="sr-only"
                     />
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors group-hover:border-[#FF4D15] ${
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors group-hover:border-[#ee3c6b] ${
                       requestType === 'new' 
-                        ? 'bg-[#FF4D15] border-[#FF4D15]' 
-                        : 'border-[#C5C5C5]'
+                        ? 'bg-[#ee3c6b] border-[#ee3c6b]' 
+                        : 'border-gray-300'
                     }`}>
                       {requestType === 'new' && (
                         <div className="w-3 h-2 border-l-2 border-b-2 border-white transform -rotate-45"></div>
@@ -344,7 +335,7 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                     </div>
                   </div>
                   <div className="group-hover:opacity-90 transition-opacity">
-                    <div className={`text-lg leading-6 text-[#1C1C1C] ${requestType === 'new' ? 'font-semibold' : ''}`}>
+                    <div className={`text-base md:text-lg text-gray-900 ${requestType === 'new' ? 'font-semibold' : ''}`}>
                       Новое подключение домашнего интернета
                     </div>
                   </div>
@@ -360,10 +351,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                       onChange={() => setRequestType('support')}
                       className="sr-only"
                     />
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors group-hover:border-[#FF4D15] ${
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors group-hover:border-[#ee3c6b] ${
                       requestType === 'support' 
-                        ? 'bg-[#FF4D15] border-[#FF4D15]' 
-                        : 'border-[#C5C5C5]'
+                        ? 'bg-[#ee3c6b] border-[#ee3c6b]' 
+                        : 'border-gray-300'
                     }`}>
                       {requestType === 'support' && (
                         <div className="w-3 h-2 border-l-2 border-b-2 border-white transform -rotate-45"></div>
@@ -371,10 +362,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                     </div>
                   </div>
                   <div className="group-hover:opacity-90 transition-opacity">
-                    <div className={`text-lg leading-6 text-[#1C1C1C] ${requestType === 'support' ? 'font-semibold' : ''}`}>
+                    <div className={`text-base md:text-lg text-gray-900 ${requestType === 'support' ? 'font-semibold' : ''}`}>
                       Вопросы по действующему подключению
                     </div>
-                    <small className="text-base text-[#8C8C8C] mt-1 block">
+                    <small className="text-sm text-gray-600 mt-1 block">
                       (Техподдержка, подключение, оплата)
                     </small>
                   </div>
@@ -391,10 +382,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                   }
                 }}
                 disabled={!requestType}
-                className={`w-full md:w-[180px] h-14 rounded-[28px] text-lg font-semibold transition-all duration-300 ${
+                className={`w-full h-12 rounded-xl text-base font-semibold transition-all duration-300 ${
                   requestType 
-                    ? 'bg-[#FF4D15] text-white cursor-pointer hover:bg-[#E34612] shadow-md hover:shadow-lg transform hover:-translate-y-0.5' 
-                    : 'bg-[#BFBFBF] text-white cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white cursor-pointer hover:shadow-lg' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
                 Выбрать
@@ -404,25 +395,22 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
 
           {step === 'form' && (
             <div>
-              <h2 className="text-2xl md:text-[28px] font-bold leading-[1.3] text-[#1B1B1B] mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
                 Специалист перезвонит и ответит на все вопросы по новому подключению
               </h2>
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="relative">
-                  <label className="block text-[#1B1B1B] mb-2 font-medium flex items-center">
+                  <label className="block text-gray-900 mb-2 font-medium flex items-center">
                     Телефон
                     {errors.phone && (
-                      <span className="ml-2 text-xs text-red-500 flex items-center">
-                        <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                        </svg>
+                      <span className="ml-2 text-xs text-[#ee3c6b] flex items-center">
                         {errors.phone}
                       </span>
                     )}
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 font-semibold text-[#1B1B1B] z-10">
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 font-semibold text-gray-900 z-10">
                       +7
                     </span>
                     <InputMask
@@ -434,10 +422,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                         if (errors.phone) validateField('phone', e.target.value);
                       }}
                       onBlur={() => validateField('phone', phone)}
-                      className={`w-full h-12 pl-14 pr-5 border rounded-[36px] text-lg transition-all ${
+                      className={`w-full h-12 pl-14 pr-5 border rounded-xl text-base transition-all ${
                         errors.phone 
-                          ? 'border-2 border-[#E63946]' 
-                          : 'border border-[#C5C5C5] hover:border-[#9C9C9C] focus:border-2 focus:border-[#FF4D15] focus:shadow-[0_0_0_2px_rgba(255,77,21,0.25)]'
+                          ? 'border-2 border-[#ee3c6b]' 
+                          : 'border border-gray-300 hover:border-gray-400 focus:border-2 focus:border-[#ee3c6b]'
                       }`}
                       placeholder="(___) ___-__-__"
                       type="tel"
@@ -448,13 +436,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                 </div>
 
                 <div>
-                  <label className="block text-[#1B1B1B] mb-2 font-medium flex items-center">
+                  <label className="block text-gray-900 mb-2 font-medium flex items-center">
                     Имя
                     {errors.name && (
-                      <span className="ml-2 text-xs text-red-500 flex items-center">
-                        <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                        </svg>
+                      <span className="ml-2 text-xs text-[#ee3c6b] flex items-center">
                         {errors.name}
                       </span>
                     )}
@@ -467,10 +452,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                       if (errors.name) validateField('name', e.target.value);
                     }}
                     onBlur={() => validateField('name', name)}
-                    className={`w-full h-12 px-5 border rounded-[36px] text-lg transition-all placeholder-[#B3B3B3] ${
+                    className={`w-full h-12 px-4 border rounded-xl text-base transition-all placeholder-gray-400 ${
                       errors.name 
-                        ? 'border-2 border-[#E63946]' 
-                        : 'border border-[#C5C5C5] hover:border-[#9C9C9C] focus:border-2 focus:border-[#FF4D15] focus:shadow-[0_0_0_2px_rgba(255,77,21,0.25)]'
+                        ? 'border-2 border-[#ee3c6b]' 
+                        : 'border border-gray-300 hover:border-gray-400 focus:border-2 focus:border-[#ee3c6b]'
                     }`}
                     placeholder="Имя"
                     autoComplete="name"
@@ -479,28 +464,27 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                 </div>
 
                 <div className="relative">
-                  <label className="block text-[#1B1B1B] mb-2 font-medium">Время звонка</label>
+                  <label className="block text-gray-900 mb-2 font-medium">Время звонка</label>
                   <button
                     type="button"
                     onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
-                    className={`w-full inline-flex items-center justify-between gap-2 text-base cursor-pointer p-3 border rounded-[36px] hover:border-[#9C9C9C] transition-colors
-                      ${selectedTime === 'asap' ? 'text-[#0F191E]' : 'text-[#FF4D15] font-semibold'} ${
-                      isTimeDropdownOpen ? 'border-[#FF4D15] border-2' : 'border-[#C5C5C5]'
-                    }`}
+                    className={`w-full inline-flex items-center justify-between gap-2 text-base cursor-pointer p-3 border rounded-xl hover:border-gray-400 transition-colors
+                      ${isTimeDropdownOpen ? 'border-[#ee3c6b] border-2' : 'border-gray-300'}`}
                     style={{ background: 'none', outline: 'none', boxShadow: 'none' }}
                   >
                     <span>{timeSlots.find(slot => slot.value === selectedTime)?.label || 'Выберите время'}</span>
                     <svg 
-                      className={`w-6 h-6 transition-transform duration-200 ${isTimeDropdownOpen ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 transition-transform duration-200 ${isTimeDropdownOpen ? 'rotate-180' : ''}`}
                       fill="none" 
-                      viewBox="0 0 32 32"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <path d="M16.0008 19.6668C15.8674 19.6668 15.7452 19.6445 15.6341 19.6001C15.523 19.5557 15.423 19.4779 15.3341 19.3668L9.00078 13.0334C8.86745 12.9001 8.80078 12.7223 8.80078 12.5001C8.80078 12.2779 8.86745 12.1001 9.00078 11.9668C9.17856 11.789 9.36189 11.7112 9.55078 11.7334C9.73967 11.7557 9.91189 11.8334 10.0674 11.9668L16.0008 17.9001L21.9341 11.9668C22.0674 11.8334 22.2452 11.7612 22.4674 11.7501C22.6897 11.739 22.8674 11.8112 23.0008 11.9668C23.1786 12.1223 23.2563 12.3057 23.2341 12.5168C23.2119 12.7279 23.1341 12.9112 23.0008 13.0668L16.6674 19.3668C16.5786 19.4779 16.4786 19.5557 16.3674 19.6001C16.2563 19.6445 16.1341 19.6668 16.0008 19.6668Z" fill="#0F191E"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
                   {isTimeDropdownOpen && (
-                    <div className={`absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-lg py-2 z-20 ${
+                    <div className={`absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-lg py-2 z-20 ${
                       shouldOpenUp ? 'bottom-full mb-2' : 'top-full'
                     } max-h-[50vh] overflow-y-auto border border-gray-200`}
                     >
@@ -512,10 +496,10 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                             setSelectedTime(slot.value);
                             setIsTimeDropdownOpen(false);
                           }}
-                          className={`w-full px-6 py-3 text-left transition-colors ${
+                          className={`w-full px-4 py-3 text-left transition-colors ${
                             selectedTime === slot.value 
-                              ? 'bg-[#FFF4F0] text-[#FF4D15] font-semibold' 
-                              : 'text-[#0F191E] hover:bg-gray-100'
+                              ? 'bg-gray-100 text-[#ee3c6b] font-semibold' 
+                              : 'text-gray-900 hover:bg-gray-50'
                           }`}
                           role="option"
                           aria-selected={selectedTime === slot.value}
@@ -530,9 +514,9 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                 <button
                   type="submit"
                   disabled={!isFormValid || submitted || isSubmitting}
-                  className={`w-full h-14 rounded-[36px] text-lg font-semibold transition-all duration-300 flex items-center justify-center mt-8 ${
+                  className={`w-full h-12 rounded-xl text-base font-semibold transition-all duration-300 flex items-center justify-center mt-6 ${
                     isFormValid && !submitted && !isSubmitting 
-                      ? 'bg-[#FF4D15] text-white hover:bg-[#E34612] shadow-md hover:shadow-lg transform hover:-translate-y-0.5' 
+                      ? 'bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white hover:shadow-lg' 
                       : 'bg-gray-200 text-gray-500'
                   }`}
                   aria-disabled={!isFormValid || submitted || isSubmitting}
@@ -553,7 +537,7 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                 </button>
               </form>
 
-              <p className="text-xs text-[#6E6E6E] text-center mt-6">
+              <p className="text-xs text-gray-600 text-center mt-6">
                 Отправляя, вы соглашаетесь с <button type="button" className="underline text-[#174A8D]">политикой обработки данных</button>
               </p>
             </div>
@@ -561,27 +545,27 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
 
           {step === 'support' && (
             <div>
-              <h2 className="text-2xl md:text-[28px] font-bold text-[#001B44] mb-6">Вопросы по действующему подключению</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Вопросы по действующему подключению</h2>
               
-              <div className="space-y-6">
-                <p className="text-lg leading-[26px] text-[#1B1B1B]">
-                  Вы являетесь действующим абонентом Ростелеком
+              <div className="space-y-4">
+                <p className="text-base text-gray-800">
+                  Вы являетесь действующим абонентом МТС
                 </p>
-                <p className="text-lg leading-[26px] text-[#1B1B1B]">
+                <p className="text-base text-gray-800">
                   Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.
                 </p>
                 
                 <div className="mt-6">
-                  <p className="text-lg leading-[26px] text-[#1B1B1B] mb-3">
+                  <p className="text-base text-gray-800 mb-3">
                     Рекомендуем позвонить по номеру
                   </p>
                   <a 
-                    href="tel:88001000800" 
-                    className="text-2xl md:text-[32px] font-semibold text-[#174A8D] tracking-wider block mb-1 hover:underline"
+                    href="tel:87501000750" 
+                    className="text-xl md:text-2xl font-semibold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors"
                   >
-                    8 800 100-08-00
+                    8 750 100-08-00
                   </a>
-                  <p className="text-sm text-[#6E6E6E]">Звонок бесплатный по РФ</p>
+                  <p className="text-sm text-gray-500">Эксклюзивная линия для клиентов</p>
                 </div>
               </div>
             </div>

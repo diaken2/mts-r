@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { city: string } }) {
   const data = await getCityData(params.city.toLowerCase());
   const name = data?.meta?.name || params.city;
-  return { title: `Политика конфиденциальности Ростелеком в ${name}` };
+  return { title: `Политика конфиденциальности МТС в ${name}` };
 }
 
 export default async function CityPolicyPage({ params }: { params: { city: string } }) {

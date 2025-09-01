@@ -89,7 +89,7 @@ function formatLeadMessage(data: LeadData): string {
     message += `💬 <b>Комментарий:</b> ${data.comment}\n`;
   }
 
-  message += `\n🔗 <b>Источник:</b> rostelecom-tariffs.ru`;
+  message += `\n🔗 <b>Источник:</b> mts-tariffs.ru`;
 
   return message;
 }

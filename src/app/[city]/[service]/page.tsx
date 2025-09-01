@@ -53,21 +53,21 @@ export async function generateMetadata({ params }: { params: { city: string; ser
   let description = "";
 
   if (service === "internet") {
-    title = `Интернет Ростелеком в ${cityName} — подключить интернет Ростелеком в квартиру, тарифы в 2025 году`;
-    description = `Действующие тарифы Ростелеком на домашний интернет в 2025 году. Подключить интернет в квартире в ${cityName}. Оставьте заявку на подключение на нашем сайте.`;
+    title = `Интернет МТС в ${cityName} — подключить интернет МТС в квартиру, тарифы в 2025 году`;
+    description = `Действующие тарифы МТС на домашний интернет в 2025 году. Подключить интернет в квартире в ${cityName}. Оставьте заявку на подключение на нашем сайте.`;
   } else if (service === "internet-tv") {
-    title = `Интернет + ТВ Ростелеком в ${cityName} — подключить комплекс услуг, тарифы в 2025 году`;
-    description = `Тарифы Ростелеком на интернет и телевидение в ${cityName}. Подключение комплексных услуг Ростелеком в 2025 году.`;
+    title = `Интернет + ТВ МТС в ${cityName} — подключить комплекс услуг, тарифы в 2025 году`;
+    description = `Тарифы МТС на интернет и телевидение в ${cityName}. Подключение комплексных услуг МТС в 2025 году.`;
   } else if (service === "internet-mobile") {
-    title = `Интернет + мобильная связь Ростелеком в ${cityName} — тарифы в 2025 году`;
-    description = `Актуальные тарифы Ростелеком на интернет и мобильную связь в ${cityName}. Быстрое подключение услуг Ростелекома.`;
+    title = `Интернет + мобильная связь МТС в ${cityName} — тарифы в 2025 году`;
+    description = `Актуальные тарифы МТС на интернет и мобильную связь в ${cityName}. Быстрое подключение услуг МТСа.`;
   } else if (service === "internet-tv-mobile") {
-    title = `Интернет + ТВ + мобильная связь Ростелеком в ${cityName} — тарифы в 2025 году`;
-    description = `Комплексные тарифы Ростелеком в ${cityName}, включающие интернет, ТВ и мобильную связь. Подключение онлайн.`;
+    title = `Интернет + ТВ + мобильная связь МТС в ${cityName} — тарифы в 2025 году`;
+    description = `Комплексные тарифы МТС в ${cityName}, включающие интернет, ТВ и мобильную связь. Подключение онлайн.`;
   } else {
     // fallback
-    title = `Тарифы Ростелеком в ${cityName}`;
-    description = `Тарифы и предложения Ростелеком в ${cityName}.`;
+    title = `Тарифы МТС в ${cityName}`;
+    description = `Тарифы и предложения МТС в ${cityName}.`;
   }
 
   return {
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: { params: { city: string; ser
     openGraph: {
       title,
       description,
-      images: ["https://rtk-telecom.ru/android-icon-192x192.png"],
+      images: ["https://mts-telecom.ru/android-icon-192x192.png"],
     },
     alternates: {
       canonical: `https://ваш-домен.ру/${city}/${service}`,

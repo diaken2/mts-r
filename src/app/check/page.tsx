@@ -1,42 +1,38 @@
-"use client";
-
-import React, { useState, Suspense } from "react";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import HeroAddressSearch from "@/components/blocks/HeroAddressSearch";
-import CallRequestModal from "@/components/ui/CallRequestModal";
-import { useSupportOnly } from "@/context/SupportOnlyContext";
-
-const city = "в России";
-
-function CheckPageContent() {
-  const [isCallRequestModalOpen, setIsCallRequestModalOpen] = useState(false);
-  const { isSupportOnly } = useSupportOnly();
-
-  const handleCallRequest = () => {
-    setIsCallRequestModalOpen(true);
-  };
 
 
-  
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <HeroAddressSearch />
-      <Footer cityName={city} />
-      <CallRequestModal
-        isOpen={isCallRequestModalOpen}
-        onClose={() => setIsCallRequestModalOpen(false)}
-      />
-    </div>
-  );
+import React, { useState, Suspense, useEffect } from "react";
+import CheckPageClient from "../[city]/check/CheckPageClient";
+import { getAvailableCities, getCityData } from "@/lib/data-service";
+export async function generateStaticParams() {
+  try {
+    const cities = await getAvailableCities();
+    return cities.map((city: string) => ({ city }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
+export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
+  try {
+    const { city } = await params;
+    const data = await getCityData(city.toLowerCase());
+    const name = data?.meta?.name || city;
+    return { 
+      title: `Контакты официального дилера МТС в ${name}`,
+      description: `Контактная информация МТС в ${name}. Телефоны, адреса, официальный дилер.`
+    };
+  } catch (error) {
+    return { 
+      title: `Контакты официального дилера МТС`,
+      description: `Контактная информация МТС. Телефоны, адреса, официальный дилер.`
+    };
+  }
 }
 
-export default function CheckPage() {
+export default function CheckPage({cityName}:any) {
   return (
     <Suspense fallback={<div>Загрузка...</div>}>
-      <CheckPageContent />
+      <CheckPageClient cityName={cityName} />
     </Suspense>
   );
 } 

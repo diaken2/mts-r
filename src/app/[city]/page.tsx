@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: { params: { city: string } })
   const cityName = data.meta.name || citySlug;
   const year = new Date().getFullYear();
 
-  const title = `Ростелеком в ${cityName} — тарифы Rostelecom в ${year} году, подключить в ${cityName}`;
-  const description = `Подключение Ростелекома в ${cityName}. Действующие тарифы на услуги РТК в ${year} году в ${cityName}. Оставьте заявку на сайте.`;
+  const title = `МТС в ${cityName} — тарифы MTS в ${year} году, подключить в ${cityName}`;
+  const description = `Подключение МТСа в ${cityName}. Действующие тарифы на услуги МТС в ${year} году в ${cityName}. Оставьте заявку на сайте.`;
 
   return {
     title,
