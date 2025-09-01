@@ -731,12 +731,13 @@ export default function TariffExplorer({
               </select>
               
               <button
-                onClick={() => setIsMobileFiltersOpen(true)}
-                className="lg:hidden inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-[#ee3c6b] hover:bg-gray-50 transition-colors"
-              >
-                <FiFilter size={16} />
-                Все фильтры
-              </button>
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="lg:hidden inline-flex items-center gap-1 px-2 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-medium text-[#ee3c6b] hover:bg-gray-50 transition-colors"
+            >
+              <FiFilter size={12} />
+              <span className="sm:inline hidden">Все фильтры</span>
+              <span className="sm:hidden">Фильтры</span>
+            </button>
             </div>
           </div>
 
