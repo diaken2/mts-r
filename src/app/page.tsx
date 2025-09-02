@@ -1714,7 +1714,7 @@ export default function HomePage() {
       </main>
       <HowConnect onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
       <Bonuses onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
-      <PromoSlider onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />ы
+      <PromoSlider onOpenSegmentationModal={() => setIsSegmentationModalOpen(true)} />
       <EquipmentBlock />
       
       <InfoBlockKrasnodar />

@@ -117,21 +117,7 @@ export default function PromoSlider({ onOpenSegmentationModal }: PromoSliderProp
                     </div>
 
                     {/* Изображение */}
-                    <div className="flex-shrink-0">
-                      <div className={`
-                        bg-white/20 rounded-2xl p-6 backdrop-blur-sm
-                        transform transition-all duration-500
-                        ${hoveredSlide === idx ? 'rotate-6 scale-110' : 'rotate-0 scale-100'}
-                      `}>
-                        <Image 
-                          src={promo.img} 
-                          alt={promo.title} 
-                          width={200} 
-                          height={200} 
-                          className="w-40 h-40 md:w-48 md:h-48 object-contain"
-                        />
-                      </div>
-                    </div>
+                 
                   </div>
                 </div>
               </div>

@@ -468,7 +468,7 @@ export function CustomAddressSuggestionsFetch({ cityFiasId, cityName, value, onC
           if (suggestions.length) setOpen(true);
         }}
         placeholder="Введите улицу и дом"
-        className="bg-transparent outline-none flex-1 text-sm md:text-lg px-2 py-1 w-full text-gray-800 placeholder-gray-500"
+        className="bg-transparent outline-none flex-1 text-lg px-2 py-1 w-full placeholder:text-gray-400"
         autoComplete="off"
       />
 
@@ -642,211 +642,214 @@ export default function HeroAddressSearch() {
 
   // Исправленные иконки с правильными путями
   const benefits = [
-    { icon: "/icons/abons.svg", text: "11 млн. абонентов" },
-    { icon: "/icons/soedineniye.svg", text: "Надежное соединение" },
-    { icon: "/icons/onlenekinoandtv.svg", text: "Онлайн кино и ТВ" },
-    { icon: "/icons/parens.svg", text: "Родительский контроль" },
-    { icon: "/icons/wifidots.svg", text: "Wi-Fi в любой точке" },
-    { icon: "/icons/games.svg", text: "Облачный гейминг" },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ), 
+      text: "81,9 млн абонентов" 
+    },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ), 
+      text: "Выгодные тарифы" 
+    },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ), 
+      text: "Быстрый интернет" 
+    },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ), 
+      text: "Надежное соединение" 
+    },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+        </svg>
+      ), 
+      text: "Wi-Fi в любой точке" 
+    },
+    { 
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ), 
+      text: "Поддержка 24/7" 
+    },
   ];
 
   return (
-    <section className="relative">
-      {/* Убрал все свечения и анимации */}
+    <section className="relative bg-gradient-to-r from-[#e30611] to-[#ad82f2] min-h-[600px] flex items-center overflow-hidden">
+      {/* Декоративные элементы */}
+      <div className="absolute inset-0 bg-[url('/icons/grid-pattern.svg')] bg-center opacity-10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#e30611]/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#ad82f2]/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
 
-      {/* Текстура с градиентом МТС - упрощена для мобильных */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#e30611]/5 via-[#8f97de]/10 to-[#ad82f2]/5"></div>
+      <div className="container mx-auto px-4 md:px-8 relative z-20 flex flex-col items-center justify-center w-full">
+        <div className="w-full flex flex-col md:flex-row items-start md:items-stretch gap-0 md:gap-0 relative">
+          <div className="flex-1 flex flex-col justify-center py-12">
+            <h1 className="text-white text-3xl md:text-5xl font-bold text-left leading-tight mb-8 drop-shadow-md">
+              Домашний интернет
+              <br />
+              МТС в {city && city.trim().length > 0 ? city.trim() : "вашем городе"}
+            </h1>
 
-      <div className="container mx-auto px-4 md:px-8 relative z-20 flex flex-col items-center justify-center w-full py-12 md:py-20">
-        {/* Main Content */}
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
-          
-          {/* Left Content */}
-          <div className="flex-1 flex flex-col justify-center">
-            {/* Title */}
-            <div className="relative mb-6 md:mb-8">
-              <h1 className="text-2xl md:text-4xl lg:text-6xl font-extrabold leading-tight mb-4 md:mb-6 text-center">
-                <span className="text-gray-900">Домашний интернет</span>
-                <br />
-                <span className="bg-gradient-to-r from-[#e30611] via-[#ad82f2] to-[#8f97de] bg-clip-text text-transparent">
-                  МТС в {city && city.trim().length > 0 ? city.trim() : 'вашем городе'}
-                </span>
-              </h1>
-              <div className="absolute -bottom-2 md:-bottom-4 left-0 right-0 mx-auto w-24 md:w-32 h-1 bg-gradient-to-r from-[#ee3c6b] to-transparent rounded-full"></div>
-            </div>
-
-            {/* Premium Card */}
-            <div className="relative">
-              <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 border border-gray-200 shadow-lg">
-                <div className="text-base md:text-xl font-medium mb-6 md:mb-8 text-gray-800 leading-relaxed">
+            <div className="relative z-10 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl flex flex-col md:flex-row items-stretch pt-10 pb-10 px-8 gap-0 md:gap-0 w-full max-w-full border border-white/20">
+              <div className="flex-1 flex flex-col justify-center pr-0 md:pr-10">
+                <div className="text-2xl font-semibold mb-6 text-gray-900 leading-tight">
                   Узнайте эксклюзивные тарифы и акции МТС, доступные только по вашему адресу
                 </div>
                 
-                <div className="flex items-center mb-6 md:mb-8 relative">
-                  <div className="bg-[#ee3c6b] p-2 rounded-full mr-3 md:mr-4">
-                    <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 12.414A6 6 0 1112.414 13.414l4.243 4.243a1 1 0 001.414-1.414z" />
-                    </svg>
-                  </div>
-                  <span 
-                    className="text-base md:text-lg text-gray-800 font-medium cursor-pointer" 
+                <div className="relative mb-6">
+                  <div
+                    className="flex items-center cursor-pointer hover:bg-gray-50/50 p-3 rounded-xl transition-all duration-200 group border border-gray-200/50"
                     onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
                   >
-                    {city && city.trim().length > 0 ? city.trim() : 'в России'}
-                  </span>
-                  <CityDropdown 
-                    isOpen={isCityDropdownOpen} 
-                    onClose={() => setIsCityDropdownOpen(false)} 
-                    onSelect={handleCitySelect} 
-                    currentCity={city} 
-                  />
+                    <svg className="w-6 h-6 text-gray-500 mr-3 group-hover:text-gray-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 12.414A6 6 0 1112.414 13.414l4.243 4.243a1 1 0 001.414-1.414z" />
+                    </svg>
+                    <span className="text-lg text-gray-800 font-medium group-hover:text-gray-900 transition-colors">
+                      {city && city.trim().length > 0 ? city.trim() : "Выберите город"}
+                    </span>
+                    <svg
+                      className={`w-5 h-5 ml-3 text-gray-400 transition-all ${isCityDropdownOpen ? "rotate-180 text-gray-600" : ""} group-hover:text-gray-600`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+
+                  <CityDropdown isOpen={isCityDropdownOpen} onClose={() => setIsCityDropdownOpen(false)} onSelect={handleCitySelect} currentCity={city} />
                 </div>
 
                 <SupportOnlyBlock>
-                  <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                    {/* Address Field */}
-                    <div className="relative">
-                      <div className="flex items-center bg-gray-50 rounded-lg md:rounded-xl px-4 md:px-6 py-3 md:py-4 border border-gray-200">
-                        <div className="bg-[#ee3c6b] p-1.5 md:p-2 rounded-lg mr-3 md:mr-4">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-white">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z" fill="currentColor"/>
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <CustomAddressSuggestionsFetch
-                            cityFiasId={cityFiasId}
-                            cityName={city}
-                            value={selectedSuggestion}
-                            onChange={(suggestion: DaDataSuggestion<DaDataAddress> | undefined) => {
-                              setSelectedSuggestion(suggestion);
-                              if (suggestion) {
-                                setForm({ ...form, address: suggestion.value });
-                              }
-                            }}
-                          />
-                        </div>
-                      </div>
-                      {error.address && (
-                        <div className="text-[#ee3c6b] text-xs md:text-sm mt-1 md:mt-2 ml-12 md:ml-14">Пожалуйста, введите адрес</div>
-                      )}
-                    </div>
-
-                    {/* Phone Field */}
-                    <div className="relative">
-                      <div className="flex items-center bg-gray-50 rounded-lg md:rounded-xl px-4 md:px-6 py-3 md:py-4 border border-gray-200">
-                        <div className="bg-[#ee3c6b] p-1.5 md:p-2 rounded-lg mr-3 md:mr-4">
-                          <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                          </svg>
-                        </div>
-                        <input
-                          type="tel"
-                          placeholder="Введите номер телефона"
-                          className="bg-transparent outline-none flex-1 text-sm md:text-lg px-2 py-1 w-full text-gray-800 placeholder-gray-500"
-                          value={form.phone}
-                          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div className={`flex items-center bg-gray-50/50 rounded-2xl px-6 py-4 border transition-all duration-200 ${
+                      error.address ? "border-red-300 bg-red-50/50" : "border-gray-200/50 hover:border-gray-300 focus-within:border-[#e30611] focus-within:ring-4 focus-within:ring-[#e30611]/20"
+                    }`}>
+                      <svg width="28" height="28" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-3 flex-shrink-0">
+                        <path d="M22 36.3133C22.7444 34.9501 23.5705 33.6372 24.4783 32.3745C25.386 31.1118 26.3031 29.9143 27.2297 28.782C28.7983 26.8242 30.0424 25.108 30.9619 23.6335C31.8813 22.1591 32.3411 20.238 32.3411 17.8702C32.3411 15.115 31.3346 12.765 29.3216 10.8202C27.3086 8.87546 24.8642 7.90307 21.9882 7.90307C19.1123 7.90307 16.6718 8.87546 14.6666 10.8202C14.861 6.02944 25.295 6.55895 30.2374 9.736C30.2374 12.1037 32.0637 14.0861 32.9832 15.5606C33.9027 17.0351 30.8654 22.0749 32.434 24.0327C33.3606 25.165 22.7986 34.4192 23.7063 35.6819C24.614 36.9446 22 36.7409 22 36.3133ZM22 40.3333C21.617 40.3333 21.2713 40.2172 20.963 39.985C20.6546 39.7528 20.4342 39.448 20.3018 39.0707C19.3669 36.6431 18.2647 34.6262 16.9952 33.02C15.7258 31.4139 14.5117 29.8749 13.3529 28.4031C12.1785 26.945 11.1872 25.4182 10.379 23.8229C9.57077 22.2276 9.16666 20.244 9.16666 17.872C9.16666 14.414 10.4053 11.4875 12.8825 9.0925C15.3598 6.6975 18.3989 5.5 22 5.5C25.601 5.5 28.6402 6.6943 31.1175 9.08292C33.5947 11.4715 34.8333 14.4019 34.8333 17.8741C34.8333 20.2447 34.4315 22.2248 33.6279 23.8145C32.8243 25.4042 31.8378 26.9337 30.8031 28.4031C29.4939 29.8749 28.2724 31.4139 27.0037 33.02C25.735 34.6262 24.6358 36.6384 23.7063 39.0565C23.5685 39.4271 23.3454 39.7326 23.037 39.9729C22.7287 40.2132 22.383 40.3333 22 40.3333Z" fill="#0F191E" />
+                        <circle cx="22" cy="18.332" r="5.5" fill="white" />
+                      </svg>
+                      <div className="flex-1">
+                        <CustomAddressSuggestionsFetch
+                          cityFiasId={cityFiasId}
+                          cityName={city}
+                          value={selectedSuggestion}
+                          onChange={(suggestion) => {
+                            setSelectedSuggestion(suggestion);
+                            if (suggestion) {
+                              setForm({ ...form, address: suggestion.value });
+                              setError({ ...error, address: false });
+                            }
+                          }}
                         />
                       </div>
-                      {error.phone && (
-                        <div className="text-[#ee3c6b] text-xs md:text-sm mt-1 md:mt-2 ml-12 md:ml-14">Введите корректный номер телефона</div>
-                      )}
                     </div>
+                    {error.address && <div className="text-red-500 text-sm -mt-3 ml-14 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Пожалуйста, введите адрес
+                    </div>}
+
+                    <div className={`flex items-center bg-gray-50/50 rounded-2xl px-6 py-4 border transition-all duration-200 ${
+                      error.phone ? "border-red-300 bg-red-50/50" : "border-gray-200/50 hover:border-gray-300 focus-within:border-[#e30611] focus-within:ring-4 focus-within:ring-[#e30611]/20"
+                    }`}>
+                      <svg className="w-6 h-6 text-gray-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      <input
+                        type="tel"
+                        placeholder="Введите номер телефона"
+                        className="bg-transparent outline-none flex-1 text-lg px-2 py-1 w-full placeholder:text-gray-400"
+                        value={form.phone}
+                        onChange={(e) => {
+                          setForm({ ...form, phone: e.target.value });
+                          setError({ ...error, phone: false });
+                        }}
+                      />
+                    </div>
+                    {error.phone && <div className="text-red-500 text-sm -mt-3 ml-14 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Введите корректный номер телефона
+                    </div>}
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className={`w-full bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl transition-all duration-300 text-sm md:text-lg shadow-lg hover:shadow-xl ${
-                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
+                      className={`relative overflow-hidden bg-gradient-to-r from-[#ee3c6b] via-[#ff0032] to-[#ad82f2] text-white font-semibold px-10 h-14 rounded-full shadow-lg text-lg tracking-wide transition-all duration-300 hover:scale-[1.02] ${isSubmitting ? "opacity-60 cursor-not-allowed" : ""}`}
                     >
-                      {isSubmitting ? (
-                        <span className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white mr-2 md:mr-3"></div>
-                          Отправляем...
-                        </span>
-                      ) : (
-                        'Найти эксклюзивные тарифы'
-                      )}
+                      {isSubmitting ? "Отправляем..." : "Найти тарифы"}
                     </button>
                   </form>
                 </SupportOnlyBlock>
               </div>
-            </div>
-          </div>
-          
-          {/* Right Content - Call Request */}
-          <div className="lg:w-96 flex flex-col justify-center mt-8 lg:mt-0">
-            <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 border border-gray-200 shadow-lg">
-              {isSupportOnly ? (
-                <div className="text-center">
-                  <div className="bg-[#fff2f6] p-3 md:p-4 rounded-lg md:rounded-xl mb-4 md:mb-6 border border-[#ee3c6b]/30">
-                    <p className="text-gray-800 text-sm md:text-lg font-semibold">Вы являетесь действующим абонентом</p>
+
+              <div className="flex flex-col justify-center items-center md:items-start md:pl-8 mt-8 md:mt-0 md:w-[300px] border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0">
+                {isSupportOnly ? (
+                  <div className="text-center md:text-left">
+                    <p className="text-gray-500 text-base mb-4">Вы являетесь действующим абонентом</p>
+                    <div className="bg-[#fff2f6] rounded-xl p-4">
+                      <p className="text-gray-700 mb-2 font-medium">Премиум поддержка 24/7</p>
+                      <a href="tel:87501000750" className="text-xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:underline">
+                        8 750 100-08-00
+                      </a>
+                      <p className="text-sm text-gray-500">Эксклюзивная линия для клиентов</p>
+                    </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-200">
-                    <p className="text-gray-800 mb-2 md:mb-4 font-medium text-sm md:text-base">Премиум поддержка 24/7</p>
-                    <a 
-                      href="tel:87501000750" 
-                      className="text-lg md:text-2xl font-bold text-[#1e4e9d] tracking-wider block mb-1 md:mb-2 hover:text-[#ee3c6b] transition-colors duration-300"
+                ) : (
+                  <>
+                    <p className="text-gray-500 text-base mb-4 text-center md:text-left">
+                      или закажите звонок, наш специалист
+                      <br />
+                      перезвонит в течение 10 минут
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleCallRequest}
+                      className="h-14 rounded-full border-2 border-[#ee3c6b] text-[#ee3c6b] hover:bg-[#ee3c6b] hover:text-white font-semibold flex items-center justify-center gap-2 px-8 text-base transition-colors"
                     >
-                      8 750 100-08-00
-                    </a>
-                    <p className="text-gray-600 text-xs md:text-sm">Эксклюзивная линия для клиентов</p>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="text-center mb-6 md:mb-8">
-                    <div className="bg-[#ee3c6b] p-2 md:p-3 rounded-full mb-3 md:mb-4 mx-auto w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-                      <svg className="w-4 h-4 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                       </svg>
-                    </div>
-                    <p className="text-gray-800 text-sm md:text-lg mb-1 md:mb-2 font-medium">Или доверьтесь экспертам</p>
-                    <p className="text-gray-600 text-xs md:text-sm">Персональный менеджер перезвонит в течение 5 минут</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleCallRequest}
-                    className="w-full bg-transparent border-2 border-[#ee3c6b] text-[#ee3c6b] hover:bg-[#ee3c6b] hover:text-white font-semibold py-2 md:py-3 px-4 md:px-8 rounded-lg md:rounded-xl transition-all duration-300 text-sm md:text-lg"
-                  >
-                    Заказать консультацию
-                  </button>
-                </>
-              )}
+                      Заказать звонок
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Premium Benefits Section */}
-        <div className="w-full max-w-6xl mx-auto mt-12 md:mt-20">
-          <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 relative">
-            <span className="bg-gradient-to-r from-[#ee3c6b] via-[#ad82f2] to-[#8f97de] bg-clip-text text-transparent">
-              Превосходство в каждой детали
-            </span>
-            <div className="absolute -bottom-2 md:-bottom-4 left-1/2 transform -translate-x-1/2 w-16 md:w-24 h-1 bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] rounded-full"></div>
-          </h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+        
+        <div className="w-full max-w-5xl mx-auto -mt-4">
+          <h2 className="text-white text-xl md:text-2xl font-bold text-center mb-6">Почему выбирают МТС</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-white">
             {benefits.map((b, i) => (
-              <div key={i} className="flex flex-col items-center text-center">
-                <div className="relative mb-3 md:mb-4">
-                  <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200">
-                    <div className="relative w-6 h-6 md:w-8 md:h-8 mx-auto">
-                      <Image 
-                        src={b.icon} 
-                        alt={b.text}
-                        width={24}
-                        height={24}
-                        className="md:w-8 md:h-8"
-                        style={{
-                          filter: 'brightness(0) saturate(100%) invert(37%) sepia(91%) saturate(1021%) hue-rotate(312deg) brightness(99%) contrast(83%)'
-                        }}
-                      />
-                    </div>
-                  </div>
+              <div key={i} className="flex flex-col items-center text-center group">
+                <div className="mb-3 p-3 bg-white/10 rounded-2xl backdrop-blur-sm transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110">
+                  {b.icon}
                 </div>
-                
-                <div className="text-xs md:text-sm font-medium text-gray-600 px-1 md:px-2 leading-tight">
+                <div className="text-sm font-medium leading-tight opacity-90 group-hover:opacity-100 transition-opacity">
                   {b.text}
                 </div>
               </div>

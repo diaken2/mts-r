@@ -98,16 +98,7 @@ const FaqBlock = () => {
                 aria-expanded={open === idx}
               >
                 <div className="flex items-center space-x-4">
-                  <div className={`
-                    w-12 h-12 rounded-xl flex items-center justify-center text-xl
-                    transition-all duration-300
-                    ${open === idx 
-                      ? 'bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white' 
-                      : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
-                    }
-                  `}>
-                    {item.icon}
-                  </div>
+                
                   <span className={`
                     text-lg font-semibold transition-colors duration-300
                     ${open === idx 
