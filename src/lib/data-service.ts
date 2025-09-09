@@ -74,7 +74,8 @@ export async function getCityData(slug: string): Promise<CityData | null> {
   }
 }
 
-export async function getServiceData(city: string, service: string): Promise<{ 
+export async function getServiceData(city: string, service: string): Promise<{
+  title: string; 
   cityName: string; 
   service: ServiceData 
 } | null> {
