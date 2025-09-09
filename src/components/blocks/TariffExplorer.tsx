@@ -44,7 +44,7 @@ type BooleanFilterKey =
   | 'hitsOnly';
 
 const defaultFilters: Filters = {
-  internet: false,
+  internet: true,
   tv: false,
   mobile: false,
   onlineCinema: false,

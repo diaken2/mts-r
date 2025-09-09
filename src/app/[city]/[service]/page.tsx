@@ -5,6 +5,7 @@ import TariffExplorer from "@/components/blocks/TariffExplorer";
 import CityServiceLayout from "@/components/layout/CityServiceLayout";
 
 export const revalidate = 3600;
+
 function formatServiceName(type: string): string {
   const parts = type
     .toLowerCase()
@@ -33,20 +34,21 @@ function formatServiceName(type: string): string {
 
   return type; // fallback
 }
+
 export async function generateMetadata({ params }: { params: { city: string; service: string } }) {
   const { city, service } = params;
   
-  const cityData = await getCityData(city);
   const data = await getServiceData(city, service);
 
-  if (!cityData || !data) {
+  if (!data) {
     return {
       title: 'Тарифы не найдены',
       description: 'Указанная услуга или город не найдены.',
     };
   }
 
-  const cityName = cityData.meta.name || city;
+  const cityData = await getCityData(city);
+  const cityName = cityData?.meta.name || city;
   const serviceTitle = data.title || service;
 
   let title = "";
@@ -60,7 +62,7 @@ export async function generateMetadata({ params }: { params: { city: string; ser
     description = `Тарифы МТС на интернет и телевидение в ${cityName}. Подключение комплексных услуг МТС в 2025 году.`;
   } else if (service === "internet-mobile") {
     title = `Интернет + мобильная связь МТС в ${cityName} — тарифы в 2025 году`;
-    description = `Актуальные тарифы МТС на интернет и мобильную связь в ${cityName}. Быстрое подключение услуг МТСа.`;
+    description = `Актуальные тарифы МТС на интернет и мобильную связь в ${cityName}. Быстрое подключение услуг МТС.`;
   } else if (service === "internet-tv-mobile") {
     title = `Интернет + ТВ + мобильная связь МТС в ${cityName} — тарифы в 2025 году`;
     description = `Комплексные тарифы МТС в ${cityName}, включающие интернет, ТВ и мобильную связь. Подключение онлайн.`;
@@ -83,49 +85,60 @@ export async function generateMetadata({ params }: { params: { city: string; ser
     },
   };
 }
+
 export async function generateStaticParams() {
-  const cities = await getAvailableCities();
-  const params = [];
-  for (const city of cities) {
-    const services = await getCityServices(city);
-    for (const service of services) {
-      params.push({ city, service });
+  try {
+    const cities = await getAvailableCities();
+    const params = [];
+    
+    // Ограничим количество городов для статической генерации
+    const limitedCities = cities.slice(0, 50); // например, первые 50 городов
+    
+    for (const city of limitedCities) {
+      const services = await getCityServices(city);
+      for (const service of services) {
+        params.push({ city, service });
+      }
     }
+    return params;
+  } catch (err) {
+    console.error("Ошибка при генерации статических параметров:", err);
+    return [];
   }
-  return params;
 }
 
-export default async function ServicePage({ params }: { params: { city: string; service: string } }){
+export default async function ServicePage({ params }: { params: { city: string; service: string } }) {
   const { city, service } = params;
 
-  const data = await getServiceData(city, service);
-  if (!data) return notFound();
+  // Получаем ВСЕ данные города
+  const cityData = await getCityData(city);
+  if (!cityData) return notFound();
 
-const cityData = await getCityData(city);
-if (!cityData) return notFound();
+  // Проверяем, что запрошенный сервис существует
+  const serviceData = cityData.services[service];
+  if (!serviceData) return notFound();
 
-const cityName = cityData.meta.name;
-const serviceTitle = formatServiceName(data?.tariffs?.[0]?.type || service);
-const allTariffs = Object.values(cityData.services).flatMap((s) => s.tariffs);
-  console.log('sdsd')     // например "Интернет"
-console.log('титл',serviceTitle)
-// внутри ServicePage
-const rawServiceType = data.tariffs[0]?.type || serviceTitle;
-const formattedServiceName = formatServiceName(rawServiceType);
+  const cityName = cityData.meta.name;
+  const serviceTitle = formatServiceName(serviceData?.tariffs?.[0]?.type || service);
+  
+  // Получаем ВСЕ тарифы города
+  const allTariffs = Object.values(cityData.services).flatMap((s:any) => s.tariffs);
 
+  // Фильтруем тарифы для текущего сервиса (только для первоначального отображения)
+  const initialTariffs = serviceData.tariffs || [];
 
-return (
-  <CityServiceLayout service={serviceTitle} cityName={cityName} citySlug={city}>
-    <Suspense fallback={<div className="flex justify-center items-center min-h-[400px]">Загрузка тарифов...</div>}>
-      <TariffExplorer
-        tariffs={allTariffs} // 👈 здесь все тарифы города
-        cityName={cityName}
-        service={serviceTitle}
-        citySlug={city}
-        titleservice={data.title || service}
-        origservice={service}
-      />
-    </Suspense>
-  </CityServiceLayout>
-);
+  return (
+    <CityServiceLayout service={serviceTitle} cityName={cityName} citySlug={city}>
+      <Suspense fallback={<div className="flex justify-center items-center min-h-[400px]">Загрузка тарифов...</div>}>
+        <TariffExplorer
+          tariffs={allTariffs} // Передаем все тарифы города
+          cityName={cityName}
+          citySlug={city}
+          service={serviceTitle}
+          titleservice={serviceData.title || service}
+          origservice={service}
+        />
+      </Suspense>
+    </CityServiceLayout>
+  );
 }

@@ -14,7 +14,9 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const renderPrice = () => {
-    if (tariff.discountPrice !== undefined) {
+    if (tariff.discountPrice !== undefined && tariff.discountPrice !== null) {
+      const discountPercent = Math.round((1 - tariff.discountPrice / tariff.price) * 100);
+      
       return (
         <div className="mb-5">
           <div className="flex items-baseline gap-3 mb-3">
@@ -24,16 +26,25 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
             <span className="text-lg text-gray-500 line-through">
               {tariff.price} ₽
             </span>
+            <span className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white text-xs font-bold px-3 py-1 rounded-full">
+              -{discountPercent}%
+            </span>
           </div>
-          <div className="inline-flex items-center bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
-            🔥 -{tariff.discountPercentage}% {tariff.discountPeriod}
-          </div>
+          {tariff.discountPeriod && (
+            <div className="text-sm text-green-600 font-medium">
+              {tariff.discountPeriod}
+            </div>
+          )}
         </div>
       );
     }
+    
     return (
-      <div className="text-3xl font-bold text-gray-900 mb-5">
-        {tariff.price} ₽<span className="text-lg font-normal text-gray-600">/мес</span>
+      <div className="mb-5">
+        <div className="text-3xl font-bold text-gray-900">
+          {tariff.price} ₽
+        </div>
+        <div className="text-sm text-gray-600">в месяц</div>
       </div>
     );
   };
@@ -50,7 +61,6 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
               alt="Интернет" 
               width={20} 
               height={20} 
-              className="text-white"
             />
           </div>
           <div>
@@ -70,7 +80,6 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
               alt="ТВ" 
               width={20} 
               height={20} 
-              className="text-white"
             />
           </div>
           <div>
@@ -82,6 +91,16 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
     }
     
     if (tariff.mobileData || tariff.mobileMinutes) {
+      // Форматируем текст в зависимости от наличия данных и минут
+      let mobileText = '';
+      if (tariff.mobileData && tariff.mobileMinutes) {
+        mobileText = `${tariff.mobileData} ГБ + ${tariff.mobileMinutes} мин`;
+      } else if (tariff.mobileData) {
+        mobileText = `${tariff.mobileData} ГБ`;
+      } else if (tariff.mobileMinutes) {
+        mobileText = `${tariff.mobileMinutes} мин`;
+      }
+      
       specs.push(
         <div key="mobile" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
           <div className="bg-[#1e7bff] p-2 rounded-lg mr-3">
@@ -90,20 +109,17 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
               alt="Мобильная связь" 
               width={20} 
               height={20} 
-              className="text-white"
             />
           </div>
           <div>
-            <span className="font-semibold text-gray-900">
-              {tariff.mobileData} ГБ + {tariff.mobileMinutes} мин
-            </span>
+            <span className="font-semibold text-gray-900">{mobileText}</span>
             <p className="text-xs text-gray-600">Мобильная связь</p>
           </div>
         </div>
       );
     }
 
-    if (tariff.mtsTvIncluded) {
+    if (tariff.mtsTvIncluded || tariff.kionIncluded) {
       specs.push(
         <div key="mts-tv" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
           <div className="bg-gradient-to-r from-[#ff0032] to-[#ee3c6b] p-2 rounded-lg mr-3">
@@ -112,7 +128,6 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
               alt="KION" 
               width={20} 
               height={20} 
-              className="text-white"
             />
           </div>
           <div>
@@ -154,13 +169,15 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
         
         <div className="flex flex-col gap-2 ml-4">
           {tariff.isHit && (
-            <span className="bg-gradient-to-r from-[#ff0032] to-[#ee3c6b] text-white text-xs font-bold px-3 py-2 rounded-full shadow-lg transform rotate-3">
+            <span className="bg-gradient-to-r from-[#ff0032] to-[#ee3c6b] text-white text-xs font-bold px-3 py-1 rounded-full">
               🚀 ХИТ ПРОДАЖ
             </span>
           )}
-          <span className="bg-gradient-to-r from-[#8e66e4] to-[#c1d8fb] text-white text-xs font-medium px-3 py-2 rounded-full">
-            {tariff.technology}
-          </span>
+          {tariff.technology && (
+            <span className="bg-gradient-to-r from-[#8e66e4] to-[#c1d8fb] text-white text-xs font-medium px-3 py-1 rounded-full">
+              {tariff.technology}
+            </span>
+          )}
         </div>
       </div>
       
@@ -176,7 +193,7 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           Что входит в тариф:
         </h4>
         <ul className="space-y-3">
-          {tariff.features.slice(0, 3).map((feature: string, index: number) => (
+          {tariff.features?.slice(0, 3).map((feature: string, index: number) => (
             <li key={index} className="flex items-start group">
               <div className="bg-green-100 p-1 rounded-full mr-3 mt-0.5 flex-shrink-0 group-hover:bg-green-200 transition-colors">
                 <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -188,7 +205,7 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
               </span>
             </li>
           ))}
-          {tariff.features.length > 3 && (
+          {tariff.features?.length > 3 && (
             <li className="text-[#ee3c6b] text-sm font-semibold mt-3 flex items-center group">
               <div className="bg-[#ee3c6b]/10 p-1 rounded-full mr-2">
                 <svg className="w-4 h-4 text-[#ee3c6b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,19 +224,24 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
             <p className="text-blue-700 text-sm font-medium mb-2">Техническая поддержка</p>
             <a 
-              href="tel:87501000750" 
+              href="tel:88002500890" 
               className="text-blue-700 font-bold text-lg hover:text-[#ee3c6b] transition-colors inline-flex items-center"
             >
-              📞 8 750 100-08-00
+              📞 8 800 250-08-90
             </a>
             <p className="text-xs text-blue-600 mt-2">Круглосуточная поддержка</p>
           </div>
         ) : (
           <>
             <button className="w-full bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-              Подключить за 0 ₽
+              Подключить за {tariff.connectionPrice !== undefined ? `${tariff.connectionPrice} ₽` : '0 ₽'}
             </button>
             
+            {tariff.connectionPrice === 0 && (
+              <div className="text-green-600 text-sm font-medium mt-3">
+                ✓ Бесплатное подключение
+              </div>
+            )}
           </>
         )}
       </div>

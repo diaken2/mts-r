@@ -1,16 +1,10 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import CityServiceLayout from '@/components/layout/CityServiceLayout'
-import { getCityData, getAvailableCities } from '@/lib/data-service'
+import { getCityData } from '@/lib/data-service'
 import CityTariffExplorer from '@/components/blocks/CityTariffExplorer'
 
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-  const cities = await getAvailableCities()
-  return cities.map(city => ({ city }))
-}
-
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { city: string } }) {
   const citySlug = params.city.toLowerCase();
@@ -27,7 +21,7 @@ export async function generateMetadata({ params }: { params: { city: string } })
   const year = new Date().getFullYear();
 
   const title = `МТС в ${cityName} — тарифы MTS в ${year} году, подключить в ${cityName}`;
-  const description = `Подключение МТСа в ${cityName}. Действующие тарифы на услуги МТС в ${year} году в ${cityName}. Оставьте заявку на сайте.`;
+  const description = `Подключение МТС в ${cityName}. Действующие тарифы на услуги МТС в ${year} году в ${cityName}. Оставьте заявку на сайте.`;
 
   return {
     title,
@@ -44,7 +38,7 @@ export default async function CityPage({ params }: { params: { city: string } })
   const data = await getCityData(city)
   if (!data) return notFound()
 
-  const tariffsData = Object.values(data.services).flatMap(s => s.tariffs)
+  const tariffsData = Object.values(data.services).flatMap((s:any) => s.tariffs)
 
   return (
     <CityServiceLayout service="home" cityName={data.meta.name} citySlug={city}>

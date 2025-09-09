@@ -17,8 +17,8 @@ export interface Tariff {
   features: string[];
   buttonColor?: string;
   isHit?: boolean;
+  hidden?: boolean; // Добавил скрытое поле для фильтрации
 }
-
 
 export interface ServiceData {
   id: string;
@@ -44,33 +44,75 @@ export interface CityData {
   };
 }
 
-const DATA_DIR = path.join(process.cwd(), 'data', 'cities');
 const cache = new Map<string, CityData>();
 
-export async function getCityData(city: string): Promise<CityData | null> {
-  if (cache.has(city)) return cache.get(city)!;
+export async function getCityData(slug: string): Promise<CityData | null> {
   try {
-    const filePath = path.join(DATA_DIR, `${city}.json`);
-    const data = await fs.readFile(filePath, 'utf-8');
-    const json: CityData = JSON.parse(data);
-    if (!json.meta || !json.services) throw new Error(`Invalid data structure for ${city}`);
-    cache.set(city, json);
-    return json;
-  } catch {
+    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs/${slug}`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      console.error('Failed to fetch city data:', res.status);
+      return null;
+    }
+    
+    const data = await res.json();
+
+    // 🔍 Отфильтровываем скрытые тарифы
+    if (data?.services) {
+      for (const category in data.services) {
+        data.services[category].tariffs = (data.services[category].tariffs || [])
+          .filter((t: any) => !t.hidden);
+      }
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Ошибка при получении данных:", err);
     return null;
   }
 }
 
-export async function getServiceData(city: string, service: string): Promise<ServiceData | null> {
-  const cityData = await getCityData(city);
-  return cityData?.services[service] || null;
+export async function getServiceData(city: string, service: string): Promise<{ 
+  cityName: string; 
+  service: ServiceData 
+} | null> {
+  try {
+    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs/${city}/${service}`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) return null;
+    const data = await res.json();
+    
+    // Фильтруем скрытые тарифы
+    if (data?.service?.tariffs) {
+      data.service.tariffs = data.service.tariffs.filter((t: any) => !t.hidden);
+    }
+    
+    return data;
+  } catch (err) {
+    console.error("Ошибка при получении данных сервиса:", err);
+    return null;
+  }
 }
 
 export async function getAvailableCities(): Promise<string[]> {
   try {
-    const files = await fs.readdir(DATA_DIR);
-    return files.filter(f => f.endsWith('.json')).map(f => f.replace('.json', ''));
-  } catch {
+    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      console.error('Failed to fetch cities:', res.status);
+      return [];
+    }
+    
+    const data = await res.json();
+    return data.map((item: any) => item.slug);
+  } catch (err) {
+    console.error("Ошибка при получении списка городов:", err);
     return [];
   }
 }
@@ -78,4 +120,4 @@ export async function getAvailableCities(): Promise<string[]> {
 export async function getCityServices(city: string): Promise<string[]> {
   const cityData = await getCityData(city);
   return cityData ? Object.keys(cityData.services) : [];
-} 
+}
