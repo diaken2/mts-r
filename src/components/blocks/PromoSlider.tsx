@@ -84,8 +84,7 @@ export default function PromoSlider({ onOpenSegmentationModal }: PromoSliderProp
         </div>
 
         {/* Декоративные элементы */}
-        <div className="absolute -right-20 top-1/2 transform -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-[#4295f5]/10 to-[#1e7bff]/10 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute -left-20 bottom-1/4 w-48 h-48 bg-gradient-to-r from-[#ff0032]/10 to-[#ee3c6b]/10 rounded-full blur-3xl -z-10"></div>
+       
       </div>
     </section>
   );
