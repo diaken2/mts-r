@@ -752,7 +752,7 @@ const handleExcelImport = async (file: File) => {
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Админ-панель управления тарифами</h1>
-            <p className="text-gray-600">Ростелеком - управление тарифными планами</p>
+            <p className="text-gray-600">МТС - управление тарифными планами</p>
           </div>
           <button 
             onClick={handleLogout}

@@ -247,7 +247,7 @@ const QuestionsBlock: React.FC = () => {
                   <p className="text-base text-gray-500 mb-4 text-left">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф</p>
                   <div className="mb-2 text-left">
                     <span className="text-base">Рекомендуем позвонить по номеру</span><br />
-                    <a href="tel:87501000750" className="text-2xl md:text-3xl font-bold text-[#ee3c6b] hover:underline">8 750 100-08-00</a>
+                    <a href="tel:88002500890" className="text-2xl md:text-3xl font-bold text-[#ee3c6b] hover:underline"> 8 800 250-08-90</a>
                   </div>
                   <div className="text-base text-left">
                     или узнать информацию в <a href="#" className="text-[#ee3c6b] underline">личном кабинете</a>
@@ -579,7 +579,7 @@ const QuestionsBlock: React.FC = () => {
                   <p className="text-base text-gray-500 mb-4 text-left">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф</p>
                   <div className="mb-2 text-left">
                     <span className="text-base">Рекомендуем позвонить по номеру</span><br />
-                    <a href="tel:87501000750" className="text-2xl md:text-3xl font-bold text-[#ee3c6b] hover:underline">8 750 100-08-00</a>
+                    <a href="tel:88002500890" className="text-2xl md:text-3xl font-bold text-[#ee3c6b] hover:underline"> 8 800 250-08-90</a>
                   </div>
                   <div className="text-base text-left">
                     или узнать информацию в <a href="#" className="text-[#ee3c6b] underline">личном кабинете</a>

@@ -81,6 +81,16 @@ const devices = [
     price: 350,
     period: "₽/мес",
     features: []
+  },
+    {
+    type: "tvbox",
+    img: "/devices/sdmc-dv9135.webp",
+    name: "ТВ приставка",
+    model: "SDMC DV9135",
+    payment: "Покупка",
+    price: 3500,
+    period: "₽",
+    features: []
   }
 ];
 

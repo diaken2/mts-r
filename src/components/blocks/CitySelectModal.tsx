@@ -14,7 +14,31 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
   const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+ const [regionsData, setRegionsData] = useState<any[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+useEffect(() => {
+  if (isOpen) {
+    const fetchRegions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://mts-r-server.onrender.com/api/regions');
+        if (response.ok) {
+          const data = await response.json();
+          setRegionsData(data);
+        } else {
+          console.error('Ошибка загрузки регионов');
+          // Можно загрузить fallback данные или показать ошибку
+        }
+      } catch (error) {
+        console.error('Ошибка:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    fetchRegions();
+  }
+}, [isOpen]);
   // Определение мобильного устройства
   useEffect(() => {
     const checkMobile = () => {
@@ -65,9 +89,9 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
     const q = query.toLowerCase();
     const results: Array<{ city: string; region: string; regionId: string }> = [];
     
-    regions.forEach(letterGroup => {
-      letterGroup.areas.forEach(region => {
-        region.cities.forEach(city => {
+    regionsData.forEach(letterGroup => {
+      letterGroup?.areas.forEach((region:any) => {
+        region.cities.forEach((city:any) => {
           if (city.toLowerCase().includes(q)) {
             results.push({
               city,
@@ -83,14 +107,14 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
   })() : [];
 
   // Фильтрация регионов и городов (для десктопной версии)
-  let filtered = regions;
+  let filtered = regionsData;
   if (query.trim()) {
     const q = query.toLowerCase();
-    filtered = regions
+    filtered = regionsData
       .map(letterGroup => {
-        const filteredAreas = letterGroup.areas
-          .map(area => {
-            const filteredCities = area.cities.filter(city => city.toLowerCase().includes(q));
+        const filteredAreas = letterGroup?.areas
+          .map((area:any) => {
+            const filteredCities = area.cities.filter((city:any) => city.toLowerCase().includes(q));
             if (area.name.toLowerCase().includes(q) || filteredCities.length > 0) {
               return { ...area, cities: filteredCities.length > 0 ? filteredCities : area.cities };
             }
@@ -102,7 +126,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
         }
         return null;
       })
-      .filter(Boolean) as typeof regions;
+      .filter(Boolean) as typeof regionsData;
   }
 
   // Выбор региона по умолчанию (первый в списке)
@@ -129,9 +153,20 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
   };
 
   if (!isOpen) return null;
-
+  if(isLoading){
+    return (
+       <div className="flex justify-center items-center h-40">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ee3c6b]"></div>
+  </div>
+    )}
+    
+ 
+ 
   return (
+    
     <div className="fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-[1000] p-4">
+    
+
       <div
         className={
           isMobile
@@ -226,9 +261,9 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
               ) : isMobile ? (
                 // Мобильная версия: регионы с inline городами
                 <ul className="space-y-2">
-                  {regions.map(letterGroup => (
+                  {regionsData.map(letterGroup => (
                     <React.Fragment key={letterGroup.letter}>
-                      {letterGroup.areas.map(region => {
+                      {letterGroup?.areas.map((region:any) => {
                         const isExpanded = expandedRegions.has(region.id);
                         const cities = region.cities;
                         
@@ -254,7 +289,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                             {/* Раскрытые города */}
                             {isExpanded && (
                               <ul className="ml-4 space-y-1">
-                                {cities.map(city => (
+                                {cities.map((city:any) => (
                                   <li key={city}>
                                     <button
                                       className="w-full px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-[#fff2f6] hover:text-[#ee3c6b] transition-all duration-300 rounded-lg"
@@ -279,7 +314,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
                 <ul className="divide-y divide-gray-100">
                   {filtered.map(letterGroup => (
                     <React.Fragment key={letterGroup.letter}>
-                      {letterGroup.areas.map(region => (
+                      {letterGroup?.areas.map((region:any) => (
                         <li
                           key={region.id}
                           className={`px-3 py-3 cursor-pointer text-base font-medium transition-all duration-300 rounded-lg mx-1 ${
@@ -307,7 +342,7 @@ export default function CitySelectModal({ isOpen, onClose, onSelect }: CitySelec
             {!isMobile && !query.trim() && (
               <div className="w-1/2 overflow-y-auto">
                 <ul className="divide-y divide-gray-100">
-                  {filteredCities.length > 0 ? filteredCities.map(city => (
+                  {filteredCities.length > 0 ? filteredCities.map((city:any) => (
                     <li
                       key={city}
                       className="px-3 py-3 cursor-pointer text-base font-medium text-gray-900 hover:bg-[#fff2f6] hover:text-[#ee3c6b] transition-all duration-300 rounded-lg mx-1"

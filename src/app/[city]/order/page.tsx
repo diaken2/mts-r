@@ -19,10 +19,17 @@ export async function generateMetadata({ params }: { params: { city: string } })
 export default async function CityOrderPage({ params }: { params: { city: string } }) {
   const data = await getCityData(params.city.toLowerCase());
   if (!data) return notFound();
+  
+  // Получаем все тарифы города (объединяем из всех сервисов)
+  const allCityTariffs = Object.values(data.services || {}).flatMap(service => 
+    service.tariffs || []
+  );
+  
+  
   return (
     <>
       <SetCityEffect city={data.meta.name} />
-      <OrderPage />
+      <OrderPage cityTariffs={allCityTariffs} />
     </>
   );
 }

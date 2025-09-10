@@ -270,8 +270,8 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
           <p className="text-gray-600 mb-4 text-center">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
           <div className="bg-gray-50 rounded-xl p-4 mb-4 text-center w-full">
             <p className="text-gray-800 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
-            <a href="tel:87501000750" className="text-2xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors">8 750 100-08-00</a>
-            <p className="text-sm text-gray-500">Эксклюзивная линия для клиентов</p>
+            <a href="tel:88002500890" className="text-2xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors"> 8 800 250-08-90</a>
+            <p className="text-sm text-gray-500">Линия для клиентов</p>
           </div>
           <div className="text-base text-center text-gray-600">
             или узнать информацию в <a href="https://lk.mts.ru/" target="_blank" rel="noopener noreferrer" className="text-[#ee3c6b] underline hover:text-[#ff0032] transition-colors">личном кабинете</a>
@@ -560,12 +560,12 @@ export default function CallRequestModal({ isOpen, onClose }: CallRequestModalPr
                     Рекомендуем позвонить по номеру
                   </p>
                   <a 
-                    href="tel:87501000750" 
+                    href="tel:88002500890" 
                     className="text-xl md:text-2xl font-semibold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors"
                   >
-                    8 750 100-08-00
+                     8 800 250-08-90
                   </a>
-                  <p className="text-sm text-gray-500">Эксклюзивная линия для клиентов</p>
+                  <p className="text-sm text-gray-500">Линия для клиентов</p>
                 </div>
               </div>
             </div>

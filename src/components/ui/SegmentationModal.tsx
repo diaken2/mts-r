@@ -207,10 +207,10 @@ export default function SegmentationModal({ isOpen, onClose, onNewConnection, on
               </p>
               <div className="bg-gray-50 rounded-xl p-6 mb-6">
                 <div className="font-semibold mb-2 text-gray-900">Для смены тарифа необходимо позвонить по номеру:</div>
-                <a href="tel:87501000750" className="text-xl md:text-2xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors">
-                  8 750 100-08-00
+                <a href="tel:88002500890" className="text-xl md:text-2xl font-bold text-[#ee3c6b] tracking-wider block mb-1 hover:text-[#ff0032] transition-colors">
+                   8 800 250-08-90
                 </a>
-                <span className="text-sm text-gray-600 block mb-2">Эксклюзивная линия для клиентов</span>
+                <span className="text-sm text-gray-600 block mb-2">Линия для клиентов</span>
                 <div className="text-sm text-gray-600">
                   или узнать информацию в <a href="https://lk.mts.ru/" target="_blank" rel="noopener noreferrer" className="underline text-[#ee3c6b] hover:text-[#ff0032] transition-colors">личном кабинете</a>
                 </div>

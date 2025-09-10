@@ -353,14 +353,14 @@ function TariffHelpForm() {
                   <div className="space-y-3">
                     <div className="flex items-center">
                       <span className="font-medium text-gray-650 w-48">Телефон для подключения:</span>
-                      <a href="tel:87503509015" className="text-rt-cta font-semibold hover:underline">
-                        8 750 350-90-15
+                      <a href="tel:88003509910" className="text-rt-cta font-semibold hover:underline">
+                        8 800 350-99-10
                       </a>
                     </div>
                     <div className="flex items-center">
                       <span className="font-medium text-gray-650 w-48">Телефон поддержки:</span>
-                      <a href="tel:87501000750" className="text-rt-cta font-semibold hover:underline">
-                        8 750 100-08-00
+                      <a href="tel:88002500890" className="text-rt-cta font-semibold hover:underline">
+                         8 800 250-08-90
                       </a>
                     </div>
                     <div className="flex items-center">

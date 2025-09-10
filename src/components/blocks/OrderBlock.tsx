@@ -25,81 +25,95 @@ const steps = [
   { title: "Подтверждение", description: "Проверьте данные" },
 ];
 
-const getTariffs = (service: string) => {
-  let typeName = '';
-  if (service === 'access') typeName = 'Интернет';
-  if (service === 'entertainment') typeName = 'Интернет + ТВ';
-  if (service === 'communication') typeName = 'Интернет + Моб. связь';
-  if (service === 'combo') typeName = 'Интернет + ТВ + Моб. связь';
+type RouterKey = 'tp-link-archer-c5-pro' | 'zte-zxhn-670' | 'tp-link-ex220' | 'tp-link-ex220-used' | 'zte-zxhn-670-used' | 'tp-link-archer-c5-pro-used';
+type TVKey = 'sdmc-dv9135' | 'sdmc-dv9135-buyout';
 
-  const promo = tariffsData
-    .filter(tariff => tariff.type === typeName && (tariff.discountPrice !== undefined || tariff.discountPercentage))
-    .sort((a, b) => (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price));
-
-  const regular = tariffsData
-    .filter(tariff => tariff.type === typeName && (tariff.discountPrice === undefined && !tariff.discountPercentage))
-    .sort((a, b) => a.price - b.price);
-
-  return [...promo, ...regular].slice(0, 3);
-};
-
-type RouterKey = 'zte-rt-gm-4' | 'huawei-hg8120h' | 'zte-h298a' | 'eltex-rg-5440g-wac';
-type TVKey = 'kion' | 'kion-plus';
-
-const routers: { id: RouterKey; name: string; price: number; description: string; features: string[]; recommended: boolean }[] = [
+// Обновляем список роутеров
+const routers: { id: RouterKey; name: string; price: number; description: string; features: string[]; recommended: boolean; paymentType: string; period: string }[] = [
   { 
-    id: 'zte-rt-gm-4', 
-    name: 'ZTE RT-GM-4', 
-    price: 150, 
+    id: 'tp-link-archer-c5-pro', 
+    name: 'TP-Link Archer C5 Pro', 
+    price: 135, 
+    description: 'Роутер', 
+    features: ['FTTB', 'Wi-Fi 5', '4 порта LAN', 'Рассрочка'],
+    recommended: true,
+    paymentType: 'Рассрочка',
+    period: '₽/мес'
+  },
+  { 
+    id: 'zte-zxhn-670', 
+    name: 'ZTE ZXHN 670', 
+    price: 240, 
     description: 'Оптический модем с Wi-Fi', 
-    features: ['GPON', 'Wi-Fi 4', '4 порта LAN', 'Рекомендуем'],
-    recommended: true
+    features: ['GPON', '2 порта LAN', 'Компактный', 'Рассрочка'],
+    recommended: false,
+    paymentType: 'Рассрочка',
+    period: '₽/мес'
   },
   { 
-    id: 'huawei-hg8120h', 
-    name: 'Huawei HG8120H', 
-    price: 30, 
-    description: 'Оптический модем без Wi-Fi', 
-    features: ['GPON', '2 порта LAN', 'Компактный'],
-    recommended: false
+    id: 'tp-link-ex220', 
+    name: 'TP-Link EX220', 
+    price: 200, 
+    description: 'Роутер', 
+    features: ['FTTB', 'Wi-Fi 6', '4 порта LAN', 'Рассрочка'],
+    recommended: false,
+    paymentType: 'Рассрочка',
+    period: '₽/мес'
   },
   { 
-    id: 'zte-h298a', 
-    name: 'ZTE H298A', 
-    price: 100, 
-    description: 'Wi-Fi Роутер', 
-    features: ['Wi-Fi 4', '4 порта LAN', 'USB порт'],
-    recommended: false
+    id: 'tp-link-ex220-used', 
+    name: 'TP-Link EX220 (Б/У)', 
+    price: 135, 
+    description: 'Роутер б/у', 
+    features: ['FTTB', 'Wi-Fi 6', '4 порта LAN', 'Рассрочка'],
+    recommended: false,
+    paymentType: 'Рассрочка',
+    period: '₽/мес'
   },
   { 
-    id: 'eltex-rg-5440g-wac', 
-    name: 'Eltex RG-5440G-Wac', 
-    price: 150, 
-    description: 'Wi-Fi Роутер', 
-    features: ['Wi-Fi 4', '4 порта LAN', '4 порта LAN', 'Игровой роутер'],
-    recommended: false
+    id: 'zte-zxhn-670-used', 
+    name: 'ZTE ZXHN 670 (Б/У)', 
+    price: 2400, 
+    description: 'Оптический модем с Wi-Fi б/у', 
+    features: ['GPON', '2 порта LAN', 'Покупка'],
+    recommended: false,
+    paymentType: 'Покупка',
+    period: '₽'
+  },
+  { 
+    id: 'tp-link-archer-c5-pro-used', 
+    name: 'TP-Link Archer C5 Pro (Б/У)', 
+    price: 2400, 
+    description: 'Роутер б/у', 
+    features: ['FTTB', 'Wi-Fi 5', '4 порта LAN', 'Покупка'],
+    recommended: false,
+    paymentType: 'Покупка',
+    period: '₽'
   },
 ];
 
-const tvBoxes: { id: TVKey; name: string; price: number; description: string; features: string[]; recommended: boolean }[] = [
+const tvBoxes: { id: TVKey; name: string; price: number; description: string; features: string[]; recommended: boolean; paymentType: string; period: string }[] = [
   { 
-    id: 'kion', 
-    name: 'KION', 
-    price: 100, 
-    description: 'Android ТВ-приставка', 
-    features: ['Android TV', 'Full HD', 'Голосовой пульт'],
-    recommended: true
+    id: 'sdmc-dv9135', 
+    name: 'SDMC DV9135', 
+    price: 350, 
+    description: 'ТВ приставка', 
+    features: ['Android TV', 'Full HD', 'Рассрочка 12 месяцев'],
+    recommended: true,
+    paymentType: 'Рассрочка',
+    period: '₽/мес'
   },
   { 
-    id: 'kion-plus', 
-    name: 'KION+', 
-    price: 335, 
-    description: 'Android ТВ-приставка', 
-    features: ['Android TV', '4K Ultra HD', 'Голосовой пульт', '24 месяца'],
-    recommended: false
-  },
+    id: 'sdmc-dv9135-buyout', 
+    name: 'SDMC DV9135', 
+    price: 3500, 
+    description: 'ТВ приставка', 
+    features: ['Android TV', 'Full HD', 'Покупка'],
+    recommended: true,
+    paymentType: 'Выкуп',
+    period: '₽'
+  }
 ];
-
 const EquipmentCounter = ({ 
   id, 
   name, 
@@ -109,7 +123,9 @@ const EquipmentCounter = ({
   recommended, 
   count, 
   onIncrement, 
-  onDecrement 
+  onDecrement,
+  paymentType,
+  period
 }: {
   id: string;
   name: string;
@@ -120,6 +136,8 @@ const EquipmentCounter = ({
   count: number;
   onIncrement: () => void;
   onDecrement: () => void;
+  paymentType: string;
+  period: string;
 }) => (
   <div className={`border rounded-xl p-4 transition-all relative ${
     count > 0 ? 'border-[#ee3c6b] bg-[#fff2f6]' : 'border-gray-200 hover:border-[#ee3c6b]'
@@ -132,7 +150,7 @@ const EquipmentCounter = ({
     
     <div className="flex justify-between items-start mb-2">
       <div className="font-bold text-lg">{name}</div>
-      <div className="font-bold text-lg text-[#ee3c6b]">{price} ₽/мес</div>
+      <div className="font-bold text-lg text-[#ee3c6b]">{price} {period}</div>
     </div>
     
     <div className="text-sm text-gray-600 mb-3">{description}</div>
@@ -145,28 +163,32 @@ const EquipmentCounter = ({
       ))}
     </div>
     
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onDecrement}
-          disabled={count === 0}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:border-[#ee3c6b] hover:text-[#ee3c6b] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          -
-        </button>
-        <span className="w-8 text-center font-medium">{count}</span>
-        <button
-          onClick={onIncrement}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:border-[#ee3c6b] hover:text-[#ee3c6b] transition-colors"
-        >
-          +
-        </button>
-      </div>
-      {count > 0 && (
-        <div className="text-sm text-gray-600">
-          Итого: {count * price} ₽/мес
-        </div>
-      )}
+   <div className="flex items-center justify-between">
+  <div className="flex items-center gap-2">
+    <button
+      onClick={onDecrement}
+      disabled={count === 0}
+      className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:border-[#ee3c6b] hover:text-[#ee3c6b] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+    >
+      -
+    </button>
+    <span className="w-8 text-center font-medium">{count}</span>
+    <button
+      onClick={onIncrement}
+      className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:border-[#ee3c6b] hover:text-[#ee3c6b] transition-colors"
+    >
+      +
+    </button>
+  </div>
+  {count > 0 && (
+    <div className="text-sm text-gray-600">
+      Итого: {count * price} {period}
+    </div>
+  )}
+</div>
+    
+    <div className="text-xs text-gray-500 mt-2">
+      {paymentType}
     </div>
   </div>
 );
@@ -185,27 +207,76 @@ const hasApartmentInAddress = (address: string) => {
   ];
   return apartmentPatterns.some(pattern => pattern.test(address));
 };
+// В начале компонента добавьте пропс
+interface OrderBlockProps {
+  cityTariffs?: any[];
+}
 
-export default function OrderBlock() {
+export default function OrderBlock({ cityTariffs = [] }: OrderBlockProps) {
+  console.log('ТАРИфы', cityTariffs)
   const router = useRouter();
   const { isSupportOnly } = useSupportOnly();
   
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    address: { street: undefined as DaDataSuggestion<DaDataAddress> | undefined, propertyType: '', apartment: '' },
-    service: '',
-    contacts: { lastname: '', firstname: '', middlename: '', phone: '' },
-    tariff: { id: '', name: '', price: 0, discountPrice: undefined as number | undefined, discountPercentage: undefined as number | undefined, discountPeriod: undefined as string | undefined },
-    routers: { 'zte-rt-gm-4': 0, 'huawei-hg8120h': 0, 'zte-h298a': 0, 'eltex-rg-5440g-wac': 0 } as Record<RouterKey, number>,
-    tvBoxes: { 'kion': 0, 'kion-plus': 0 } as Record<TVKey, number>,
-    ownRouter: false,
-    ownTVBox: false,
-    date: { day: 0, time: '12:00-15:00', asap: false, fullDate: null as Date | null, dayOfWeek: 0 },
-  });
-  
+ const [formData, setFormData] = useState({
+  address: { street: undefined as DaDataSuggestion<DaDataAddress> | undefined, propertyType: '', apartment: '' },
+  service: '',
+  contacts: { lastname: '', firstname: '', middlename: '', phone: '' },
+  tariff: { id: '', name: '', price: 0, discountPrice: undefined as number | undefined, discountPercentage: undefined as number | undefined, discountPeriod: undefined as string | undefined },
+  routers: { 
+    'tp-link-archer-c5-pro': 0, 
+    'zte-zxhn-670': 0, 
+    'tp-link-ex220': 0,
+    'tp-link-ex220-used': 0,
+    'zte-zxhn-670-used': 0,
+    'tp-link-archer-c5-pro-used': 0
+  } as Record<RouterKey, number>,
+ tvBoxes: { 
+  'sdmc-dv9135': 0,
+  'sdmc-dv9135-buyout': 0 
+} as Record<TVKey, number>,
+  ownRouter: false,
+  ownTVBox: false,
+  date: { day: 0, time: '12:00-15:00', asap: false, fullDate: null as Date | null, dayOfWeek: 0 },
+});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+// В функции getTariffs добавьте console.log для отладки
+const getTariffs = (service: string) => {
+  const serviceTypes: Record<string, string[]> = {
+    'access': ['Интернет'],
+    'entertainment': ['Интернет + ТВ', 'Интернет+ТВ'],
+    'communication': ['Интернет + Моб. Связь', 'Интернет + Моб. связь', 'Интернет+Мобильная связь'],
+    'combo': ['Интернет + ТВ + Моб. Связь', 'Интернет + ТВ + Моб. связь', 'Интернет+ТВ+Мобильная связь']
+  };
 
+  console.log('Service:', service);
+  console.log('Looking for types:', serviceTypes[service]);
+  
+  if (!cityTariffs || cityTariffs.length === 0) {
+    console.log('No city tariffs available');
+    return [];
+  }
+
+  const filtered = cityTariffs.filter(tariff => 
+    serviceTypes[service]?.includes(tariff.type)
+  );
+
+  console.log('Filtered tariffs:', filtered);
+
+  const promo = filtered
+    .filter(tariff => tariff.discountPrice !== undefined || tariff.discountPercentage)
+    .sort((a, b) => (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price));
+
+  const regular = filtered
+    .filter(tariff => !tariff.discountPrice && !tariff.discountPercentage)
+    .sort((a, b) => a.price - b.price);
+
+  const result = [...promo, ...regular].slice(0, 3);
+  console.log('Final result:', result);
+  
+  return result;
+};
   useEffect(() => {
     const addressValue = formData.address.street?.value || '';
     if (hasApartmentInAddress(addressValue) && formData.address.propertyType !== 'apartment') {
@@ -247,11 +318,18 @@ export default function OrderBlock() {
         if (!formData.tariff.id) newErrors.tariff = 'Выберите тариф';
         break;
       case 5:
-        if (!formData.ownRouter && !formData.routers['zte-rt-gm-4'] && !formData.routers['huawei-hg8120h'] && !formData.routers['zte-h298a'] && !formData.routers['eltex-rg-5440g-wac']) newErrors.routers = 'Выберите роутер или укажите свой';
-        break;
-      case 6:
-        if (!formData.ownTVBox && !formData.tvBoxes['kion'] && !formData.tvBoxes['kion-plus']) newErrors.tvBoxes = 'Выберите ТВ-приставку или укажите свою';
-        break;
+        const hasSelectedRouter = Object.values(formData.routers).some(count => count > 0);
+  if (!formData.ownRouter && !hasSelectedRouter) {
+    newErrors.routers = 'Выберите роутер или укажите свой';
+  }
+  break;
+    case 6:
+  // Проверяем, есть ли хотя бы одна ТВ-приставка выбрана ИЛИ отмечена галочка "своя приставка"
+  const hasSelectedTVBox = Object.values(formData.tvBoxes).some(count => count > 0);
+  if (!formData.ownTVBox && !hasSelectedTVBox) {
+    newErrors.tvBoxes = 'Выберите ТВ-приставку или укажите свою';
+  }
+  break;
       case 7:
         if (!formData.date.asap && !formData.date.day) newErrors.date = 'Выберите дату и время';
         break;
@@ -261,12 +339,17 @@ export default function OrderBlock() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
+const handleInputChange = (field: string, value: any) => {
+  setFormData(prev => {
+    const newData = { ...prev, [field]: value };
+    console.log('Updated form data:', newData); // Добавим лог для отладки
+    return newData;
+  });
+  
+  if (errors[field]) {
+    setErrors(prev => ({ ...prev, [field]: '' }));
+  }
+};
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
@@ -297,14 +380,12 @@ export default function OrderBlock() {
                  formData.date.fullDate ? 
                  `${formData.date.fullDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}, ${formData.date.time}` :
                  `${formData.date.day} число, ${formData.date.time}`,
-        comment: `Услуга: ${formData.service === 'access' ? 'Интернет' :
-                 formData.service === 'entertainment' ? 'Интернет + ТВ' :
-                 formData.service === 'communication' ? 'Интернет + Моб. связь' : 'Комбо'}\n` +
-                 `Тариф: ${formData.tariff.name}\n` +
-                 `Роутер: ${formData.ownRouter ? 'Свой роутер' : 
-                           getSelectedEquipment().filter(item => item.includes('ZTE') || item.includes('Huawei') || item.includes('Eltex')).join(', ') || 'Не выбран'}\n` +
-                 `ТВ-приставка: ${formData.ownTVBox ? 'Своя приставка' : 
-                                 getSelectedEquipment().filter(item => item.includes('KION')).join(', ') || 'Не выбрана'}`
+      comment: `Услуга: ${formData.service === 'access' ? 'Интернет' :
+         formData.service === 'entertainment' ? 'Интернет + ТВ' :
+         formData.service === 'communication' ? 'Интернет + Моб. связь' : 'Комбо'}\n` +
+         `Тариф: ${formData.tariff.name}\n` +
+         `Роутер: ${formData.ownRouter ? 'Свой роутер' : getSelectedRouters().join(', ') || 'Не выбран'}\n` +
+         `ТВ-приставка: ${formData.ownTVBox ? 'Своя приставка' : getSelectedTVBoxes().join(', ') || 'Не выбрана'}`
       };
 
       const response = await fetch('/api/submit-lead', {
@@ -327,17 +408,36 @@ export default function OrderBlock() {
       setIsSubmitting(false);
     }
   };
-
-  const calculateTotal = () => {
-    let total = formData.tariff.price;
-    if (!formData.ownRouter && formData.routers['zte-rt-gm-4'] > 0) total += formData.routers['zte-rt-gm-4'] * 150;
-    if (!formData.ownRouter && formData.routers['huawei-hg8120h'] > 0) total += formData.routers['huawei-hg8120h'] * 30;
-    if (!formData.ownRouter && formData.routers['zte-h298a'] > 0) total += formData.routers['zte-h298a'] * 100;
-    if (!formData.ownRouter && formData.routers['eltex-rg-5440g-wac'] > 0) total += formData.routers['eltex-rg-5440g-wac'] * 150;
-    if (!formData.ownTVBox && formData.tvBoxes['kion'] > 0) total += formData.tvBoxes['kion'] * 100;
-    if (!formData.ownTVBox && formData.tvBoxes['kion-plus'] > 0) total += formData.tvBoxes['kion-plus'] * 335;
-    return total;
-  };
+const calculateTotal = () => {
+  let monthlyTotal = formData.tariff.price;
+  let oneTimeTotal = 0;
+  
+  // Добавляем стоимость роутеров
+  Object.entries(formData.routers).forEach(([id, count]) => {
+    const router = routers.find(r => r.id === id);
+    if (router && count > 0 && !formData.ownRouter) {
+      if (router.paymentType === 'Рассрочка') {
+        monthlyTotal += count * router.price;
+      } else {
+        oneTimeTotal += count * router.price;
+      }
+    }
+  });
+  
+  // Добавляем стоимость ТВ-приставок
+  Object.entries(formData.tvBoxes).forEach(([id, count]) => {
+    const box = tvBoxes.find(b => b.id === id);
+    if (box && count > 0 && !formData.ownTVBox) {
+      if (box.paymentType === 'Рассрочка') {
+        monthlyTotal += count * box.price;
+      } else {
+        oneTimeTotal += count * box.price;
+      }
+    }
+  });
+  
+  return { monthly: monthlyTotal, oneTime: oneTimeTotal, total: monthlyTotal + oneTimeTotal };
+};
 
   const getRouterName = (id: RouterKey) => {
     const router = routers.find(r => r.id === id);
@@ -348,26 +448,32 @@ export default function OrderBlock() {
     const box = tvBoxes.find(b => b.id === id);
     return box ? box.name : '';
   };
+const getSelectedRouters = () => {
+  const selected: string[] = [];
+  Object.entries(formData.routers).forEach(([id, count]) => {
+    if (count > 0) {
+      const router = routers.find(r => r.id === id);
+      if (router) {
+        selected.push(`${router.name} (${count} шт.)`);
+      }
+    }
+  });
+  return selected;
+};
 
-  const getSelectedEquipment = () => {
-    const selected: string[] = [];
-    
-    Object.entries(formData.routers).forEach(([id, count]) => {
-      if (count > 0) {
-        const name = getRouterName(id as RouterKey);
-        selected.push(`${name} (${count} шт.)`);
+
+const getSelectedTVBoxes = () => {
+  const selected: string[] = [];
+  Object.entries(formData.tvBoxes).forEach(([id, count]) => {
+    if (count > 0) {
+      const box = tvBoxes.find(b => b.id === id);
+      if (box) {
+        selected.push(`${box.name} (${count} шт.)`);
       }
-    });
-    
-    Object.entries(formData.tvBoxes).forEach(([id, count]) => {
-      if (count > 0) {
-        const name = getTVBoxName(id as TVKey);
-        selected.push(`${name} (${count} шт.)`);
-      }
-    });
-    
-    return selected;
-  };
+    }
+  });
+  return selected;
+};
 
   const renderStepContent = () => {
     switch(currentStep) {
@@ -521,50 +627,69 @@ export default function OrderBlock() {
         );
 
       case 4:
-        const tariffs = getTariffs(formData.service);
-        return (
-          <div className="space-y-4">
-            {tariffs.map(tariff => (
-              <div
-                key={tariff.id}
-                className={`border rounded-xl p-4 cursor-pointer transition-all relative ${
-                  String(formData.tariff.id) === String(tariff.id)
-                    ? 'border-[#ee3c6b] bg-[#fff2f6]' 
-                    : 'border-gray-200 hover:border-[#ee3c6b]'
-                }`}
-                onClick={() => handleInputChange('tariff', tariff)}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="font-bold text-lg">{tariff.name}</div>
-                  {tariff.discountPrice !== undefined && tariff.discountPeriod && (
-                    <div className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white px-3 py-1 rounded-full text-xs font-bold">
-                      {tariff.discountPrice} ₽ {tariff.discountPeriod}
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-4 mb-3 text-sm">
-                  <div className="flex items-center gap-1">
-                    <span>📶</span> {tariff.speed} Мбит/с
-                  </div>
-                  {tariff.tvChannels && (
-                    <div className="flex items-center gap-1">
-                      <span>📺</span> {tariff.tvChannels} каналов
-                    </div>
-                  )}
-                  {tariff.mobileData !== undefined && tariff.mobileMinutes !== undefined && (
-                    <div className="flex items-center gap-1">
-                      <span>📱</span> {tariff.mobileData} ГБ + {tariff.mobileMinutes} мин
-                    </div>
-                  )}
-                </div>
-                <div className="font-bold text-lg text-[#ee3c6b]">
-                  {tariff.price} ₽/мес
-                </div>
+  // Просто показываем все тарифы города (первые 3)
+  const displayedTariffs = cityTariffs.slice(0, 3);
+  
+  console.log('Displaying tariffs:', displayedTariffs);
+  
+  if (displayedTariffs.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-gray-500 mb-4">Тарифы не найдены</div>
+        <button 
+          onClick={prevStep}
+          className="bg-[#ee3c6b] text-white px-6 py-2 rounded-xl"
+        >
+          Вернуться назад
+        </button>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-4">
+      {displayedTariffs.map(tariff => (
+        <div
+          key={tariff.id}
+          className={`border rounded-xl p-4 cursor-pointer transition-all relative ${
+            String(formData.tariff.id) === String(tariff.id)
+              ? 'border-[#ee3c6b] bg-[#fff2f6]' 
+              : 'border-gray-200 hover:border-[#ee3c6b]'
+          }`}
+          onClick={() => handleInputChange('tariff', tariff)}
+        >
+          <div className="flex justify-between items-start mb-2">
+            <div className="font-bold text-lg">{tariff.name}</div>
+            {tariff.discountPrice !== undefined && tariff.discountPeriod && (
+              <div className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white px-3 py-1 rounded-full text-xs font-bold">
+                {tariff.discountPrice} ₽ {tariff.discountPeriod}
               </div>
-            ))}
+            )}
           </div>
-        );
-
+          <div className="flex gap-4 mb-3 text-sm">
+            {tariff.speed && (
+              <div className="flex items-center gap-1">
+                <span>📶</span> {tariff.speed} Мбит/с
+              </div>
+            )}
+            {tariff.tvChannels && (
+              <div className="flex items-center gap-1">
+                <span>📺</span> {tariff.tvChannels} каналов
+              </div>
+            )}
+            {tariff.mobileData !== undefined && tariff.mobileMinutes !== undefined && (
+              <div className="flex items-center gap-1">
+                <span>📱</span> {tariff.mobileData} ГБ + {tariff.mobileMinutes} мин
+              </div>
+            )}
+          </div>
+          <div className="font-bold text-lg text-[#ee3c6b]">
+            {tariff.price} ₽/мес
+          </div>
+        </div>
+      ))}
+    </div>
+  );
       case 5:
         return (
           <div className="space-y-4">
@@ -574,32 +699,45 @@ export default function OrderBlock() {
               </p>
             </div>
             
-            {routers.map(router => (
-              <EquipmentCounter
-                key={router.id}
-                id={router.id}
-                name={router.name}
-                price={router.price}
-                description={router.description}
-                features={router.features}
-                recommended={router.recommended}
-                count={formData.routers[router.id]}
-                onIncrement={() => {
-                  if (formData.ownRouter) {
-                    handleInputChange('ownRouter', false);
-                  }
-                  handleInputChange('routers', { ...formData.routers, [router.id]: formData.routers[router.id] + 1 });
-                }}
-                onDecrement={() => handleInputChange('routers', { ...formData.routers, [router.id]: formData.routers[router.id] - 1 })}
-              />
-            ))}
+          {routers.map(router => (
+  <EquipmentCounter
+    key={router.id}
+    id={router.id}
+    name={router.name}
+    price={router.price}
+    description={router.description}
+    features={router.features}
+    recommended={router.recommended}
+    count={formData.routers[router.id] || 0} // Добавляем fallback
+    onIncrement={() => {
+      if (formData.ownRouter) {
+        handleInputChange('ownRouter', false);
+      }
+      handleInputChange('routers', { 
+        ...formData.routers, 
+        [router.id]: (formData.routers[router.id] || 0) + 1 
+      });
+    }}
+    onDecrement={() => handleInputChange('routers', { 
+      ...formData.routers, 
+      [router.id]: Math.max(0, (formData.routers[router.id] || 0) - 1)
+    })}
+    paymentType={router.paymentType}
+    period={router.period}
+  />
+))}
+
             
             <div className="flex items-center gap-2 mt-4">
               <Checkbox
                 checked={formData.ownRouter}
                 onChange={() => {
                   if (!formData.ownRouter) {
-                    handleInputChange('routers', { 'zte-rt-gm-4': 0, 'huawei-hg8120h': 0, 'zte-h298a': 0, 'eltex-rg-5440g-wac': 0 } as Record<RouterKey, number>);
+                    const resetRouters = {} as Record<RouterKey, number>;
+                    routers.forEach(r => {
+                      resetRouters[r.id] = 0;
+                    });
+                    handleInputChange('routers', resetRouters);
                   }
                   handleInputChange('ownRouter', !formData.ownRouter);
                 }}
@@ -613,32 +751,44 @@ export default function OrderBlock() {
       case 6:
         return (
           <div className="space-y-4">
-            {tvBoxes.map(box => (
-              <EquipmentCounter
-                key={box.id}
-                id={box.id}
-                name={box.name}
-                price={box.price}
-                description={box.description}
-                features={box.features}
-                recommended={box.recommended}
-                count={formData.tvBoxes[box.id]}
-                onIncrement={() => {
-                  if (formData.ownTVBox) {
-                    handleInputChange('ownTVBox', false);
-                  }
-                  handleInputChange('tvBoxes', { ...formData.tvBoxes, [box.id]: formData.tvBoxes[box.id] + 1 });
-                }}
-                onDecrement={() => handleInputChange('tvBoxes', { ...formData.tvBoxes, [box.id]: formData.tvBoxes[box.id] - 1 })}
-              />
-            ))}
+          {tvBoxes.map(box => (
+  <EquipmentCounter
+    key={box.id}
+    id={box.id}
+    name={box.name}
+    price={box.price}
+    description={box.description}
+    features={box.features}
+    recommended={box.recommended}
+    count={formData.tvBoxes[box.id] || 0} // Добавляем fallback
+    onIncrement={() => {
+      if (formData.ownTVBox) {
+        handleInputChange('ownTVBox', false);
+      }
+      handleInputChange('tvBoxes', { 
+        ...formData.tvBoxes, 
+        [box.id]: (formData.tvBoxes[box.id] || 0) + 1 
+      });
+    }}
+    onDecrement={() => handleInputChange('tvBoxes', { 
+      ...formData.tvBoxes, 
+      [box.id]: Math.max(0, (formData.tvBoxes[box.id] || 0) - 1)
+    })}
+    paymentType={box.paymentType}
+    period={box.period}
+  />
+))}
             
             <div className="flex items-center gap-2 mt-4">
               <Checkbox
                 checked={formData.ownTVBox}
                 onChange={() => {
                   if (!formData.ownTVBox) {
-                    handleInputChange('tvBoxes', { 'kion': 0, 'kion-plus': 0 } as Record<TVKey, number>);
+                    const resetTVBoxes = {} as Record<TVKey, number>;
+                    tvBoxes.forEach(b => {
+                      resetTVBoxes[b.id] = 0;
+                    });
+                    handleInputChange('tvBoxes', resetTVBoxes);
                   }
                   handleInputChange('ownTVBox', !formData.ownTVBox);
                 }}
@@ -778,20 +928,21 @@ export default function OrderBlock() {
                 <span className="font-medium text-right">{formData.tariff.name}</span>
               </div>
               
-              <div className="flex justify-between">
-                <span className="text-gray-600">Роутер:</span>
-                <span className="font-medium text-right">
-                  {formData.ownRouter ? 'Свой роутер' : getSelectedEquipment().filter(item => item.includes('ZTE') || item.includes('Huawei') || item.includes('Eltex')).join(', ') || 'Не выбран'}
-                </span>
-              </div>
+             <div className="flex justify-between">
+  <span className="text-gray-600">Роутер:</span>
+  <span className="font-medium text-right">
+    {formData.ownRouter ? 'Свой роутер' : 
+     getSelectedRouters().join(', ') || 'Не выбран'}
+  </span>
+</div>
               
-              <div className="flex justify-between">
-                <span className="text-gray-600">ТВ-приставка:</span>
-                <span className="font-medium text-right">
-                  {formData.ownTVBox ? 'Своя приставка' : 
-                   getSelectedEquipment().filter(item => item.includes('KION')).join(', ') || 'Не выбрана'}
-                </span>
-              </div>
+         <div className="flex justify-between">
+  <span className="text-gray-600">ТВ-приставка:</span>
+  <span className="font-medium text-right">
+    {formData.ownTVBox ? 'Своя приставка' : 
+     getSelectedTVBoxes().join(', ') || 'Не выбрана'}
+  </span>
+</div>
               
               <div className="flex justify-between">
                 <span className="text-gray-600">Контактные данные:</span>
@@ -849,7 +1000,7 @@ export default function OrderBlock() {
                   8 750 100 08 00
                 </a>
                 <p className="text-sm text-gray-600 mt-2">
-                  Эксклюзивная линия для клиентов
+                  Линия для клиентов
                 </p>
               </div>
             </div>
@@ -995,7 +1146,7 @@ export default function OrderBlock() {
                 <span className="text-gray-600">Роутер:</span>
                 <span className="font-medium text-right">
                   {formData.ownRouter ? 'Свой роутер' : 
-                   getSelectedEquipment().filter(item => item.includes('ZTE') || item.includes('Huawei') || item.includes('Eltex')).join(', ') || 'Не выбран'}
+                   getSelectedRouters().join(', ') || 'Не выбран'}
                 </span>
               </div>
               
@@ -1003,7 +1154,7 @@ export default function OrderBlock() {
                 <span className="text-gray-600">ТВ-приставка:</span>
                 <span className="font-medium text-right">
                   {formData.ownTVBox ? 'Своя приставка' : 
-                   getSelectedEquipment().filter(item => item.includes('KION')).join(', ') || 'Не выбрана'}
+                   getSelectedTVBoxes().join(', ') || 'Не выбрана'}
                 </span>
               </div>
               
@@ -1017,12 +1168,26 @@ export default function OrderBlock() {
                 </span>
               </div>
               
-              <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Итого в месяц:</span>
-                  <span className="text-[#ee3c6b]">{calculateTotal()} ₽</span>
-                </div>
-              </div>
+            <div className="border-t pt-4 mt-4">
+  <div className="space-y-2">
+    {calculateTotal().oneTime > 0 && (
+      <div className="flex justify-between text-sm">
+        <span>Единоразовый платеж:</span>
+        <span className="text-[#ee3c6b]">{calculateTotal().oneTime} ₽</span>
+      </div>
+    )}
+    <div className="flex justify-between text-sm">
+      <span>Ежемесячный платеж:</span>
+      <span className="text-[#ee3c6b]">{calculateTotal().monthly} ₽/мес</span>
+    </div>
+    <div className="flex justify-between font-bold text-lg border-t pt-2">
+      <span>Итого:</span>
+      <span className="text-[#ee3c6b]">
+        {calculateTotal().oneTime > 0 ? `${calculateTotal().total} ₽` : `${calculateTotal().monthly} ₽/мес`}
+      </span>
+    </div>
+  </div>
+</div>
             </div>
           </div>
         </div>

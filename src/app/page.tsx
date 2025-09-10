@@ -1196,7 +1196,7 @@ function TariffHelpForm() {
           <p className="mb-2 text-white/80">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
           <div className="mb-2">
             <span className="text-base text-white/80">Рекомендуем позвонить по номеру</span><br />
-            <a href="tel:87501000750" className="text-2xl md:text-3xl font-bold text-white hover:underline">8 750 100-08-00</a>
+            <a href="tel:88002500890" className="text-2xl md:text-3xl font-bold text-white hover:underline"> 8 800 250-08-90</a>
             <div className="text-xs text-white/60">Звонок бесплатный по РФ</div>
           </div>
           <div className="text-base text-white/80">

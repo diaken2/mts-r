@@ -54,10 +54,10 @@ export default function SupportOnlyBlock({ children, isQuestionsBlock = false }:
             Рекомендуем позвонить по номеру
           </p>
           <a 
-            href="tel:87501000750" 
+            href="tel:88002500890" 
             className="text-2xl md:text-3xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline"
           >
-            8 750 100-08-00
+             8 800 250-08-90
           </a>
           <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
         </div>

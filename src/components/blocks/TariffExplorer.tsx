@@ -43,17 +43,7 @@ type BooleanFilterKey =
   | 'promotions'
   | 'hitsOnly';
 
-const defaultFilters: Filters = {
-  internet: true,
-  tv: false,
-  mobile: false,
-  onlineCinema: false,
-  gameBonuses: false,
-  promotions: false,
-  hitsOnly: false,
-  priceRange: [300, 1650],
-  speedRange: [50, 1000],
-};
+
 
 const houseTypes = ["Квартира", "Частный дом", "Офис"];
 const supportOptions = [
@@ -389,11 +379,50 @@ export default function TariffExplorer({
   const [sortBy, setSortBy] = useState("popular");
   const [activeCategory, setActiveCategory] = useState("all");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
+ 
   const { isSupportOnly } = useSupportOnly();
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  
+const priceRange = useMemo(() => {
+  if (!tariffs.length) return [300, 1650];
+  
+  try {
+    const validPrices = tariffs
+      .map(tariff => Number(tariff.price))
+      .filter(price => !isNaN(price) && price > 0);
+    
+    if (!validPrices.length) return [300, 1650];
+    
+    const minPrice = Math.min(...validPrices);
+    const maxPrice = Math.max(...validPrices);
+    
+    // Добавляем небольшой запас (10%) для лучшего UX
+    const padding = (maxPrice - minPrice) * 0.1;
+    
+    return [
+      Math.max(0, Math.floor((minPrice - padding) / 50) * 50),
+      Math.ceil((maxPrice + padding) / 50) * 50
+    ];
+  } catch (error) {
+    console.error('Error calculating price range:', error);
+    return [300, 1650];
+  }
+}, [tariffs]);
+const defaultFilters: Filters = useMemo(() => ({
+    internet: false,
+    tv: false,
+    mobile: false,
+    onlineCinema: false,
+    gameBonuses: false,
+    promotions: false,
+    hitsOnly: false,
+    priceRange: priceRange,
+    speedRange: [0, 1500],
+  }), [priceRange]);
+
+   const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
   const categoryMapping = useMemo((): Record<string, string> => ({
     internet: "Интернет",
     "internet-tv": "Интернет + ТВ",
@@ -412,7 +441,12 @@ export default function TariffExplorer({
     if (hasInternet) return "internet";
     return "other";
   };
-
+ useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      priceRange: priceRange
+    }));
+  }, [priceRange]);
   useEffect(() => {
     if (categoryMapping[origservice]) {
       setActiveCategory(origservice);
@@ -627,8 +661,8 @@ export default function TariffExplorer({
               </div>
               <Slider
                 range
-                min={300}
-                max={1650}
+                 min={priceRange[0]} // используем вычисленный минимум
+    max={priceRange[1]} 
                 value={filters.priceRange}
                 onChange={(value) => Array.isArray(value) && handleFilterChange({ priceRange: value })}
                 trackStyle={[{ backgroundColor: '#ee3c6b' }]}
@@ -648,8 +682,8 @@ export default function TariffExplorer({
               </div>
               <Slider
                 range
-                min={50}
-                max={1000}
+                min={0}
+                max={1500}
                 value={filters.speedRange}
                 onChange={(value) => Array.isArray(value) && handleFilterChange({ speedRange: value })}
                 trackStyle={[{ backgroundColor: '#ee3c6b' }]}

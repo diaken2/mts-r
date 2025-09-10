@@ -61,7 +61,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <p className="text-gray-600 mb-4 text-center">Мы не сможем ответить на вопросы по действующему подключению или сменить ваш текущий тариф.</p>
           <div className="bg-blue-50 rounded-xl p-4 mb-4 text-center">
             <p className="text-gray-650 mb-2 font-medium">Рекомендуем позвонить по номеру</p>
-            <a href="tel:87501000750" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline">8 750 100-08-00</a>
+            <a href="tel: 88002500890" className="text-2xl font-bold text-blue-600 tracking-wider block mb-1 hover:underline"> 8 800 250-08-90</a>
             <p className="text-sm text-gray-500">Звонок бесплатный по РФ</p>
           </div>
           <div className="text-base text-center">
@@ -134,8 +134,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   </svg>
                 </div>
                 <div>
-                  <a href="tel:+77501000750" className="text-xl font-bold text-[#174A8D] hover:underline block" style={{letterSpacing: 0.7}}>
-                    8 750 100-08-00
+                  <a href="tel:+78002500890" className="text-xl font-bold text-[#174A8D] hover:underline block" style={{letterSpacing: 0.7}}>
+                     8 800 250-08-90
                   </a>
                   <div className="text-sm text-[#6E6E6E]">Звонок бесплатный по РФ</div>
                 </div>
