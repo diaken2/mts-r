@@ -773,7 +773,7 @@ const slug = city
                 </span>
               </div>
             </div>
-            {filteredTariffs.length > 0 ? (
+            {/* {filteredTariffs.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredTariffs.slice(0, visibleCount).map((tariff) => (
@@ -802,7 +802,7 @@ const slug = city
                   Сбросить фильтры
                 </button>
               </div>
-            )}
+            )} */}
             <section className="mt-12 rounded-3xl bg-[#6500FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">
               <div className="w-full flex flex-col gap-2 md:gap-4">
                 <h2 className="text-[28px] leading-[1.05] font-bold font-sans mb-2 md:mb-3 text-left text-white">Хотите быстро найти самый выгодный тариф?</h2>

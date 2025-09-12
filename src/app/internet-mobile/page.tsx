@@ -1584,7 +1584,7 @@ const slug = city
               </div>
             </div>
             
-            {filteredTariffs.length > 0 ? (
+            {/* {filteredTariffs.length > 0 ? (
               <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredTariffs.slice(0, visibleCount).map((tariff) => (
@@ -1616,7 +1616,7 @@ const slug = city
                   Сбросить фильтры
                 </button>
               </div>
-            )}
+            )} */}
             
             {/* Блок подбора с экспертом */}
             <section className="mt-12 rounded-3xl bg-[#6500FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">

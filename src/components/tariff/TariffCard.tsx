@@ -1,22 +1,54 @@
+
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { useSupportOnly } from '@/context/SupportOnlyContext';
+import React, { useState } from "react";
+import Image from "next/image";
+import { useSupportOnly } from "@/context/SupportOnlyContext";
 
 interface TariffCardProps {
   tariff: any;
   onClick?: () => void;
+  currentCategory: string; // e.g., 'internet-mobile'
+  currentCategoryLabel: string; // e.g., 'Интернет + Моб. связь'
+  categoryMapping: Record<string, string>; // Маппинг категорий для отображения
 }
 
-export default function TariffCard({ tariff, onClick }: TariffCardProps) {
+export default function TariffCard({
+  tariff,
+  onClick,
+  currentCategory,
+  currentCategoryLabel,
+  categoryMapping,
+}: TariffCardProps) {
   const { isSupportOnly } = useSupportOnly();
   const [isHovered, setIsHovered] = useState(false);
+ const getTariffTypeKey = (type: string): string => {
+    const hasInternet = /интернет/i.test(type);
+    const hasTV = /тв/i.test(type);
+    const hasMobile = /моб/i.test(type);
+
+    if (hasInternet && hasTV && hasMobile) return "internet-tv-mobile";
+    if (hasInternet && hasTV) return "internet-tv";
+    if (hasInternet && hasMobile) return "internet-mobile";
+    if (hasInternet) return "internet";
+
+    return "other";
+  };
+  // Логика скрытия SIM-карты: скрывать в категориях 'internet' и 'internet-tv'
+  const shouldHideSim = ["internet", "internet-tv"].includes(currentCategory);
+
+  // Определяем категорию для отображения
+  const displayCategory =
+    currentCategory === "all"
+      ? categoryMapping[getTariffTypeKey(tariff.type)] || tariff.type || "Тариф"
+      : currentCategoryLabel;
 
   const renderPrice = () => {
     if (tariff.discountPrice !== undefined && tariff.discountPrice !== null) {
-      const discountPercent = Math.round((1 - tariff.discountPrice / tariff.price) * 100);
-      
+      const discountPercent = Math.round(
+        (1 - tariff.discountPrice / tariff.price) * 100
+      );
+
       return (
         <div className="mb-5">
           <div className="flex items-baseline gap-3 mb-3">
@@ -38,7 +70,7 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
         </div>
       );
     }
-    
+
     return (
       <div className="mb-5">
         <div className="text-3xl font-bold text-gray-900">
@@ -51,48 +83,53 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
 
   const renderSpecs = () => {
     const specs = [];
-    
+
     if (tariff.speed) {
       specs.push(
-        <div key="speed" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
+        <div
+          key="speed"
+          className="flex items-center text-sm bg-gray-50 rounded-lg p-3"
+        >
           <div className="bg-[#ee3c6b] p-2 rounded-lg mr-3">
-            <Image 
-              src="/icons/ethernet.svg" 
-              alt="Интернет" 
-              width={20} 
-              height={20} 
+            <Image
+              src="/icons/ethernet.svg"
+              alt="Интернет"
+              width={20}
+              height={20}
             />
           </div>
           <div>
-            <span className="font-semibold text-gray-900">{tariff.speed} Мбит/с</span>
+            <span className="font-semibold text-gray-900">
+              {tariff.speed} Мбит/с
+            </span>
             <p className="text-xs text-gray-600">Скорость интернета</p>
           </div>
         </div>
       );
     }
-    
+
     if (tariff.tvChannels) {
       specs.push(
-        <div key="tv" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
+        <div
+          key="tv"
+          className="flex items-center text-sm bg-gray-50 rounded-lg p-3"
+        >
           <div className="bg-[#8e66e4] p-2 rounded-lg mr-3">
-            <Image 
-              src="/icons/tv.svg" 
-              alt="ТВ" 
-              width={20} 
-              height={20} 
-            />
+            <Image src="/icons/tv.svg" alt="ТВ" width={20} height={20} />
           </div>
           <div>
-            <span className="font-semibold text-gray-900">{tariff.tvChannels}+ каналов</span>
+            <span className="font-semibold text-gray-900">
+              {tariff.tvChannels}+ каналов
+            </span>
             <p className="text-xs text-gray-600">Телевидение</p>
           </div>
         </div>
       );
     }
-    
-    if (tariff.mobileData || tariff.mobileMinutes) {
-      // Форматируем текст в зависимости от наличия данных и минут
-      let mobileText = '';
+
+    // Показываем мобильную связь только если не скрываем SIM
+    if (!shouldHideSim && (tariff.mobileData || tariff.mobileMinutes)) {
+      let mobileText = "";
       if (tariff.mobileData && tariff.mobileMinutes) {
         mobileText = `${tariff.mobileData} ГБ + ${tariff.mobileMinutes} мин`;
       } else if (tariff.mobileData) {
@@ -100,15 +137,18 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
       } else if (tariff.mobileMinutes) {
         mobileText = `${tariff.mobileMinutes} мин`;
       }
-      
+
       specs.push(
-        <div key="mobile" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
+        <div
+          key="mobile"
+          className="flex items-center text-sm bg-gray-50 rounded-lg p-3"
+        >
           <div className="bg-[#1e7bff] p-2 rounded-lg mr-3">
-            <Image 
-              src="/icons/mobile.svg" 
-              alt="Мобильная связь" 
-              width={20} 
-              height={20} 
+            <Image
+              src="/icons/mobile.svg"
+              alt="Мобильная связь"
+              width={20}
+              height={20}
             />
           </div>
           <div>
@@ -121,14 +161,12 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
 
     if (tariff.mtsTvIncluded || tariff.kionIncluded) {
       specs.push(
-        <div key="mts-tv" className="flex items-center text-sm bg-gray-50 rounded-lg p-3">
+        <div
+          key="mts-tv"
+          className="flex items-center text-sm bg-gray-50 rounded-lg p-3"
+        >
           <div className="bg-gradient-to-r from-[#ff0032] to-[#ee3c6b] p-2 rounded-lg mr-3">
-            <Image 
-              src="/icons/kion.png" 
-              alt="KION" 
-              width={20} 
-              height={20} 
-            />
+            <Image src="/icons/kion.png" alt="KION" width={20} height={20} />
           </div>
           <div>
             <span className="font-semibold text-gray-900">KION Premium</span>
@@ -137,20 +175,19 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
         </div>
       );
     }
-    
-    return (
-      <div className="grid gap-3 mb-5">
-        {specs}
-      </div>
-    );
+
+    return <div className="grid gap-3 mb-5">{specs}</div>;
   };
 
+  // Функция для получения ключа категории из tariff.type
+ 
+
   return (
-    <div 
+    <div
       className={`
         bg-white rounded-2xl p-6 shadow-lg border border-gray-200 transition-all duration-300
-        ${isHovered ? 'shadow-xl transform scale-105 border-[#ee3c6b]/20' : 'hover:shadow-xl'}
-        ${!isSupportOnly && onClick ? 'cursor-pointer' : ''}
+        ${isHovered ? "shadow-xl transform scale-105 border-[#ee3c6b]/20" : "hover:shadow-xl"}
+        ${!isSupportOnly && onClick ? "cursor-pointer" : ""}
       `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -163,10 +200,10 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
             {tariff.name}
           </h3>
           <p className="text-gray-600 text-sm bg-gray-100 rounded-full px-3 py-1 inline-block">
-            {tariff.type}
+            {displayCategory}
           </p>
         </div>
-        
+
         <div className="flex flex-col gap-2 ml-4">
           {tariff.isHit && (
             <span className="bg-gradient-to-r from-[#ff0032] to-[#ee3c6b] text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -180,13 +217,13 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           )}
         </div>
       </div>
-      
+
       {/* Характеристики */}
       {renderSpecs()}
-      
+
       {/* Цена */}
       {renderPrice()}
-      
+
       {/* Особенности */}
       <div className="mb-6">
         <h4 className="font-semibold text-gray-900 mb-4 text-lg border-b border-gray-200 pb-2">
@@ -196,8 +233,16 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           {tariff.features?.slice(0, 3).map((feature: string, index: number) => (
             <li key={index} className="flex items-start group">
               <div className="bg-green-100 p-1 rounded-full mr-3 mt-0.5 flex-shrink-0 group-hover:bg-green-200 transition-colors">
-                <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <span className="text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors">
@@ -208,8 +253,18 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           {tariff.features?.length > 3 && (
             <li className="text-[#ee3c6b] text-sm font-semibold mt-3 flex items-center group">
               <div className="bg-[#ee3c6b]/10 p-1 rounded-full mr-2">
-                <svg className="w-4 h-4 text-[#ee3c6b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <svg
+                  className="w-4 h-4 text-[#ee3c6b]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               </div>
               +{tariff.features.length - 3} дополнительных услуги
@@ -217,14 +272,16 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           )}
         </ul>
       </div>
-      
+
       {/* Кнопка подключения */}
       <div className="text-center">
         {isSupportOnly ? (
           <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-            <p className="text-blue-700 text-sm font-medium mb-2">Техническая поддержка</p>
-            <a 
-              href="tel:88002500890" 
+            <p className="text-blue-700 text-sm font-medium mb-2">
+              Техническая поддержка
+            </p>
+            <a
+              href="tel:88002500890"
               className="text-blue-700 font-bold text-lg hover:text-[#ee3c6b] transition-colors inline-flex items-center"
             >
               📞 8 800 250-08-90
@@ -233,20 +290,18 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
           </div>
         ) : (
           <>
-            {/* Кнопка с текстом "Подключить" */}
             <button className="w-full bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 mb-3">
               Подключить
             </button>
-            
-            {/* Стоимость подключения под кнопкой */}
             <div className="text-center">
-              {tariff.connectionPrice === 0 || tariff.connectionPrice === undefined ? (
+              {tariff.connectionPrice === 0 ||
+              tariff.connectionPrice === undefined ? (
                 <div className="text-green-600 text-sm font-medium">
                   ✓ Бесплатное подключение
                 </div>
               ) : (
                 <div className="text-gray-600 text-sm">
-                 Подключение — <span>{tariff.connectionPrice} ₽</span>
+                  Подключение — <span>{tariff.connectionPrice} ₽</span>
                 </div>
               )}
             </div>
@@ -254,7 +309,6 @@ export default function TariffCard({ tariff, onClick }: TariffCardProps) {
         )}
       </div>
 
-      {/* Decorative elements */}
       {isHovered && (
         <div className="absolute inset-0 rounded-2xl border-2 border-[#ee3c6b]/30 pointer-events-none"></div>
       )}

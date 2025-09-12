@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -374,6 +375,7 @@ export default function CityTariffExplorer({
   tariffs: any[];
   cityName: string;
   citySlug: string;
+
 }) {
   const [visibleCount, setVisibleCount] = useState(6);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -387,56 +389,61 @@ export default function CityTariffExplorer({
   const { isSupportOnly } = useSupportOnly();
   const searchParams = useSearchParams();
   const router = useRouter();
-const priceRange = useMemo(() => {
-  if (!tariffs.length) return [300, 1650];
-  
-  try {
-    const validPrices = tariffs
-      .map(tariff => Number(tariff.price))
-      .filter(price => !isNaN(price) && price > 0);
+
+  const priceRange = useMemo(() => {
+    if (!tariffs.length) return [300, 1650];
     
-    if (!validPrices.length) return [300, 1650];
-    
-    const minPrice = Math.min(...validPrices);
-    const maxPrice = Math.max(...validPrices);
-    
-    // Добавляем небольшой запас (10%) для лучшего UX
-    const padding = (maxPrice - minPrice) * 0.1;
-    
-    return [
-      Math.max(0, Math.floor((minPrice - padding) / 50) * 50),
-      Math.ceil((maxPrice + padding) / 50) * 50
-    ];
-  } catch (error) {
-    console.error('Error calculating price range:', error);
-    return [300, 1650];
-  }
-}, [tariffs]);
-const defaultFilters: Filters = useMemo(() => ({
-    internet: false,
-    tv: false,
-    mobile: false,
-    onlineCinema: false,
-    gameBonuses: false,
-    promotions: false,
-    hitsOnly: false,
-    priceRange: priceRange,
-    speedRange: [0, 1000],
-  }), [priceRange]);
+    try {
+      const validPrices = tariffs
+        .map(tariff => Number(tariff.price))
+        .filter(price => !isNaN(price) && price > 0);
+      
+      if (!validPrices.length) return [300, 1650];
+      
+      const minPrice = Math.min(...validPrices);
+      const maxPrice = Math.max(...validPrices);
+      
+      // Добавляем небольшой запас (10%) для лучшего UX
+      const padding = (maxPrice - minPrice) * 0.1;
+      
+      return [
+        Math.max(0, Math.floor((minPrice - padding) / 50) * 50),
+        Math.ceil((maxPrice + padding) / 50) * 50
+      ];
+    } catch (error) {
+      console.error('Error calculating price range:', error);
+      return [300, 1650];
+    }
+  }, [tariffs]);
+
+  const defaultFilters: Filters = useMemo(() => ({
+      internet: false,
+      tv: false,
+      mobile: false,
+      onlineCinema: false,
+      gameBonuses: false,
+      promotions: false,
+      hitsOnly: false,
+      priceRange: priceRange,
+      speedRange: [0, 1000],
+    }), [priceRange]);
 
    const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
+
   const categoryMapping = useMemo((): Record<string, string> => ({
-    internet: "Интернет",
-    "internet-tv": "Интернет + ТВ",
-    "internet-mobile": "Интернет + Моб. связь",
-    "internet-tv-mobile": "Интернет + ТВ + Моб. связь",
-  }), []);
- useEffect(() => {
+  internet: "Интернет",
+  "internet-tv": "Интернет + ТВ",
+  "internet-mobile": "Интернет + Моб. связь",
+  "internet-tv-mobile": "Интернет + ТВ + Моб. связь",
+}), []);
+
+  useEffect(() => {
     setFilters(prev => ({
       ...prev,
       priceRange: priceRange
     }));
   }, [priceRange]);
+
   const normalize = (str: string) =>
     str
       .toLowerCase()
@@ -459,6 +466,24 @@ const defaultFilters: Filters = useMemo(() => ({
     return 'other';
   };
 
+  // Функция для получения дополнительных категорий по подстроке в названии тарифа
+  const getOverrideCategories = useMemo(() => (name: string): string[] => {
+    if (!name) return [];
+    const lowerName = name.toLowerCase();
+
+    if (lowerName.includes('для дома хорошо') || lowerName.includes('дома хорошо')) {
+      return ['internet', 'internet-mobile'];
+    } else if (lowerName.includes('рииил плюс') || lowerName.includes('риил плюс')) {
+      return ['internet-mobile'];
+    } else if (lowerName.includes('для дома отлично') || lowerName.includes('дома отлично')) {
+      return ['internet-tv', 'internet-tv-mobile'];
+    } else if (lowerName.includes('для дома супер') || lowerName.includes('дома супер')) {
+      return ['internet-tv-mobile'];
+    }
+
+    return []; // Нет дополнительных категорий
+  }, []);
+
   const isAllCategoryActive = !filters.internet && !filters.tv && !filters.mobile;
 
   useEffect(() => {
@@ -472,49 +497,54 @@ const defaultFilters: Filters = useMemo(() => ({
     }
   }, [searchParams, categoryMapping]);
 
-  const filteredTariffs = tariffs.filter((tariff) => {
-    const isDefaultPrice = filters.priceRange[0] === 300 && filters.priceRange[1] === 1650;
-    const isDefaultSpeed = filters.speedRange[0] === 50 && filters.speedRange[1] === 1000;
-    const hasActiveFilters = filters.internet || filters.tv || filters.mobile || filters.onlineCinema || filters.gameBonuses;
+  // Обновлённая логика фильтрации с маппингом категорий по подстроке
+  const filteredTariffs = useMemo(() => {
+    return tariffs.filter((tariff) => {
+      const isDefaultPrice = filters.priceRange[0] === priceRange[0] && filters.priceRange[1] === priceRange[1];
+      const isDefaultSpeed = filters.speedRange[0] === 50 && filters.speedRange[1] === 1000;
+      const hasActiveFilters = filters.internet || filters.tv || filters.mobile || filters.onlineCinema || filters.gameBonuses;
 
-    const featureText = `${tariff.name ?? ''} ${(tariff.features || []).join(' ')}`.toLowerCase();
+      const featureText = `${tariff.name ?? ''} ${(tariff.features || []).join(' ')}`.toLowerCase();
 
-    let categoryMatch = true;
-    if (activeCategory !== 'all') {
-      const tariffKey = getTariffTypeKey(tariff.type);
-      categoryMatch = tariffKey === activeCategory;
-    }
+      let categoryMatch = true;
+      if (activeCategory !== 'all') {
+        const tariffKey = getTariffTypeKey(tariff.type);
+        // Проверяем основную категорию ИЛИ дополнительные по getOverrideCategories (по подстроке в имени)
+        const overrideCategories = getOverrideCategories(tariff.name || '');
+        categoryMatch = tariffKey === activeCategory || overrideCategories.includes(activeCategory);
+      }
 
-    let sidebarMatch = true;
-    if (activeCategory === 'all' && hasActiveFilters) {
-      sidebarMatch =
-        (filters.internet && tariff.type.includes('Интернет')) ||
-        (filters.tv && tariff.type.includes('ТВ')) ||
-        (filters.mobile && tariff.type.includes('Моб')) ||
-        (filters.onlineCinema && (
-          featureText.includes('kion') ||
-          featureText.includes('фильм') ||
-          featureText.includes('сериал') ||
-          featureText.includes('кино')
-        )) ||
-        (filters.gameBonuses && (
-          featureText.includes('игров') ||
-          featureText.includes('бонус')
-        ));
-    }
+      let sidebarMatch = true;
+      if (activeCategory === 'all' && hasActiveFilters) {
+        sidebarMatch =
+          (filters.internet && tariff.type.includes('Интернет')) ||
+          (filters.tv && tariff.type.includes('ТВ')) ||
+          (filters.mobile && tariff.type.includes('Моб')) ||
+          (filters.onlineCinema && (
+            featureText.includes('kion') ||
+            featureText.includes('фильм') ||
+            featureText.includes('сериал') ||
+            featureText.includes('кино')
+          )) ||
+          (filters.gameBonuses && (
+            featureText.includes('игров') ||
+            featureText.includes('бонус')
+          ));
+      }
 
-    const promoMatch =
-      !filters.promotions ||
-      tariff.discountPrice !== undefined ||
-      tariff.discountPercentage !== undefined ||
-      tariff.name?.toLowerCase().includes('тест-драйв');
+      const promoMatch =
+        !filters.promotions ||
+        tariff.discountPrice !== undefined ||
+        tariff.discountPercentage !== undefined ||
+        tariff.name?.toLowerCase().includes('тест-драйв');
 
-    const hitsMatch = !filters.hitsOnly || tariff.isHit;
-    const priceMatch = tariff.price >= filters.priceRange[0] && tariff.price <= filters.priceRange[1];
-    const speedMatch = !tariff.speed || (tariff.speed >= filters.speedRange[0] && tariff.speed <= filters.speedRange[1]);
+      const hitsMatch = !filters.hitsOnly || tariff.isHit;
+      const priceMatch = tariff.price >= filters.priceRange[0] && tariff.price <= filters.priceRange[1];
+      const speedMatch = !tariff.speed || (tariff.speed >= filters.speedRange[0] && tariff.speed <= filters.speedRange[1]);
 
-    return categoryMatch && sidebarMatch && promoMatch && hitsMatch && priceMatch && speedMatch;
-  });
+      return categoryMatch && sidebarMatch && promoMatch && hitsMatch && priceMatch && speedMatch;
+    });
+  }, [tariffs, filters, activeCategory, priceRange, getOverrideCategories]);
 
   const sortedTariffs = (() => {
     switch (sortBy) {
@@ -660,7 +690,7 @@ const defaultFilters: Filters = useMemo(() => ({
               <Slider
                 range
                 min={priceRange[0]} // используем вычисленный минимум
-    max={priceRange[1]} 
+                max={priceRange[1]} 
                 value={filters.priceRange}
                 onChange={(value) => Array.isArray(value) && handleFilterChange({ priceRange: value })}
                 trackStyle={[{ backgroundColor: '#ee3c6b' }]}
@@ -763,35 +793,42 @@ const defaultFilters: Filters = useMemo(() => ({
                 <option value="price-high">Подороже</option>
               </select>
               
-          <button
-  onClick={() => setIsMobileFiltersOpen(true)}
-  className="lg:hidden inline-flex items-center gap-1 px-2 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-medium text-[#ee3c6b] hover:bg-gray-50 transition-colors"
->
-  <FiFilter size={12} />
-  <span className="sm:inline hidden">Все фильтры</span>
-  <span className="sm:hidden">Фильтры</span>
-</button>
+              <button
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="lg:hidden inline-flex items-center gap-1 px-2 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-medium text-[#ee3c6b] hover:bg-gray-50 transition-colors"
+              >
+                <FiFilter size={12} />
+                <span className="sm:inline hidden">Все фильтры</span>
+                <span className="sm:hidden">Фильтры</span>
+              </button>
             </div>
           </div>
 
           {/* Tariffs Grid */}
-          {sortedTariffs.length ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {sortedTariffs.slice(0, visibleCount).map((t) => (
-                <TariffCard key={t.id} tariff={t} onClick={() => setIsSegmentationModalOpen(true)} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
-              <div className="text-gray-600 mb-4">Тарифы не найдены</div>
-              <button 
-                onClick={resetFilters}
-                className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all"
-              >
-                Сбросить фильтры
-              </button>
-            </div>
-          )}
+    {sortedTariffs.length ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sortedTariffs.slice(0, visibleCount).map((t) => (
+      <TariffCard
+        key={t.id}
+        tariff={t}
+        onClick={() => setIsSegmentationModalOpen(true)}
+        currentCategory={activeCategory}
+        currentCategoryLabel={categoryMapping[activeCategory] || "Все"}
+        categoryMapping={categoryMapping}
+      />
+    ))}
+  </div>
+) : (
+  <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
+    <div className="text-gray-600 mb-4">Тарифы не найдены</div>
+    <button
+      onClick={resetFilters}
+      className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all"
+    >
+      Сбросить фильтры
+    </button>
+  </div>
+)}
 
           {/* Load More Button */}
           {visibleCount < sortedTariffs.length && (
