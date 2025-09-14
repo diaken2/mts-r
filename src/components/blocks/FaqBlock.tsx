@@ -152,25 +152,7 @@ const FaqBlock = () => {
         </div>
 
         {/* Дополнительная информация */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-[#8e66e4]/10 to-[#c1d8fb]/10 rounded-2xl p-8 border border-[#8e66e4]/20">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              💬 Не нашли ответ на свой вопрос?
-            </h3>
-            <p className="text-gray-700 mb-6">
-              Наша служба поддержки всегда готова помочь вам с любыми вопросами
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="tel:87501000750" 
-                className="bg-gradient-to-r from-[#ee3c6b] to-[#ff0032] text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 inline-flex items-center justify-center"
-              >
-                📞 8 800 250-08-90
-              </a>
-             
-            </div>
-          </div>
-        </div>
+    
       </div>
 
       {/* Декоративные элементы */}

@@ -8,6 +8,7 @@ import QuestionsBlock from "@/components/blocks/QuestionsBlock";
 import InputMask from "react-input-mask";
 import { submitLead } from '@/lib/submitLead';
 import { useSupportOnly } from '@/context/SupportOnlyContext';
+import SupportOnlyBlock from '../ui/SupportOnlyBlock';
 
 const houseTypes = [
   "Квартира",
@@ -335,7 +336,6 @@ function TariffHelpForm() {
     );
   }
 }
-
   return (
     <>
       <Header />
@@ -401,17 +401,16 @@ function TariffHelpForm() {
             </div>
 
             {/* Блок "Хотите быстро найти самый выгодный тариф?" */}
-            <section className="mt-12 rounded-3xl bg-[#6500FF] p-6 md:p-12 text-white flex flex-col items-center justify-center max-w-3xl mx-auto shadow-lg">
-              <div className="w-full flex flex-col gap-2 md:gap-4">
-                <h2 className="text-[28px] leading-[1.05] font-bold font-sans mb-2 md:mb-3 text-left text-white">
-                  Хотите быстро найти самый выгодный тариф?
-                </h2>
-                <p className="text-[18px] leading-[1.2] font-normal font-sans mb-4 md:mb-6 text-left max-w-xl text-white">
-                  Подберите тариф с экспертом. Найдём для вас лучшее решение с учетом ваших пожеланий
-                </p>
-                <TariffHelpForm />
-              </div>
-            </section>
+         <section className="mt-16 rounded-2xl bg-gradient-to-r from-[#8e66e4] to-[#c1d8fb] p-8 md:p-12 text-white">
+                     <div className="max-w-4xl mx-auto">
+                       <h2 className="text-2xl md:text-3xl font-bold mb-4">Хотите быстро найти самый выгодный тариф?</h2>
+                       <p className="text-lg md:text-xl mb-8 opacity-90">Подберите тариф с экспертом. Найдём для вас лучшее решение с учетом ваших пожеланий</p>
+                       
+                       <SupportOnlyBlock>
+                         <TariffHelpForm />
+                       </SupportOnlyBlock>
+                     </div>
+                   </section>
           </div>
         </div>
       </main>

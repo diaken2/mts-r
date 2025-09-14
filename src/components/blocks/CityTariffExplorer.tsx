@@ -425,7 +425,7 @@ export default function CityTariffExplorer({
       promotions: false,
       hitsOnly: false,
       priceRange: priceRange,
-      speedRange: [0, 1000],
+      speedRange: [0, 1024],
     }), [priceRange]);
 
    const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
@@ -500,8 +500,7 @@ export default function CityTariffExplorer({
   // Обновлённая логика фильтрации с маппингом категорий по подстроке
   const filteredTariffs = useMemo(() => {
     return tariffs.filter((tariff) => {
-      const isDefaultPrice = filters.priceRange[0] === priceRange[0] && filters.priceRange[1] === priceRange[1];
-      const isDefaultSpeed = filters.speedRange[0] === 50 && filters.speedRange[1] === 1000;
+      
       const hasActiveFilters = filters.internet || filters.tv || filters.mobile || filters.onlineCinema || filters.gameBonuses;
 
       const featureText = `${tariff.name ?? ''} ${(tariff.features || []).join(' ')}`.toLowerCase();

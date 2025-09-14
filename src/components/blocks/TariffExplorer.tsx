@@ -417,7 +417,7 @@ export default function TariffExplorer({
     promotions: false,
     hitsOnly: false,
     priceRange: priceRange,
-    speedRange: [0, 1500],
+    speedRange: [0, 1024],
   }), [priceRange]);
 
   const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
@@ -695,22 +695,22 @@ export default function TariffExplorer({
               />
             </div>
 
-            <div className="mb-6">
+          <div className="mb-4">
               <h4 className="font-semibold mb-4 text-gray-900">Скорость (Мбит/с)</h4>
               <div className="flex justify-between text-sm text-gray-600 mb-3">
                 <span>{filters.speedRange[0]}</span>
                 <span>{filters.speedRange[1]}</span>
               </div>
-             <Slider
+              <Slider
                 range
-  min={priceRange[0]}
-                max={priceRange[1]}
-                value={filters.priceRange}
-                onChange={(value) => Array.isArray(value) && handleFilterChange({ priceRange: value })}
+                min={0}
+                max={1024}
+                value={filters.speedRange}
+                onChange={(value) => Array.isArray(value) && handleFilterChange({ speedRange: value })}
                 trackStyle={[{ backgroundColor: '#ee3c6b' }]}
                 handleStyle={[
-                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' },
-                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b' }
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b', boxShadow: '0 2px 6px rgba(238, 60, 107, 0.3)' },
+                  { borderColor: '#ee3c6b', backgroundColor: '#ee3c6b', boxShadow: '0 2px 6px rgba(238, 60, 107, 0.3)' }
                 ]}
                 railStyle={{ backgroundColor: '#e5e5ed' }}
               />

@@ -19,7 +19,7 @@ export default function HowConnect({ onOpenSegmentationModal }: HowConnectProps)
         "Вы оставляете заявку на сайте"
       ) : (
         <>
-          Вы оставляете <button className="text-[#ee3c6b] underline font-semibold hover:text-[#ff0032] transition-colors" type="button" onClick={onOpenSegmentationModal}>заявку</button> на сайте или звоните по телефону <a className="text-[#ee3c6b] font-semibold hover:text-[#ff0032] transition-colors" href="tel:87503507370">8 750 350-73-70</a>
+          Вы оставляете <button className="text-[#ee3c6b] underline font-semibold hover:text-[#ff0032] transition-colors" type="button" onClick={onOpenSegmentationModal}>заявку</button> на сайте или звоните по телефону <a className="text-[#ee3c6b] font-semibold hover:text-[#ff0032] transition-colors" href="tel:88003509910">8 800 350-99-10</a>
         </>
       )
     },
