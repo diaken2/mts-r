@@ -23,7 +23,7 @@ export default function Header() {
     { name: "Интернет", filter: "internet" },
     { name: "Интернет + ТВ", filter: "internet-tv" },
     { name: "Интернет + Мобильная связь", filter: "internet-mobile" },
-    { name: "Интернет + ТV + Мобильная связь", filter: "internet-tv-mobile" },
+    { name: "Интернет + ТВ + Мобильная связь", filter: "internet-tv-mobile" },
   ];
 
   useEffect(() => {
