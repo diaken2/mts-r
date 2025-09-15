@@ -37,7 +37,8 @@ function formatServiceName(type: string): string {
 
 export async function generateMetadata({ params }: { params: { city: string; service: string } }) {
   const { city, service } = params;
-  
+  console.log('generate service', service)
+  console.log(params)
   const data = await getServiceData(city, service);
 
   if (!data) {
@@ -126,18 +127,19 @@ export default async function ServicePage({ params }: { params: { city: string; 
 
   // Фильтруем тарифы для текущего сервиса (только для первоначального отображения)
   const initialTariffs = serviceData.tariffs || [];
-
+console.log("service:", service)
+console.log("serviceTitle", serviceTitle)
   return (
     <CityServiceLayout service={serviceTitle} cityName={cityName} citySlug={city}>
       <Suspense fallback={<div className="flex justify-center items-center min-h-[400px]">Загрузка тарифов...</div>}>
-        <TariffExplorer
-          tariffs={allTariffs} // Передаем все тарифы города
-          cityName={cityName}
-          citySlug={city}
-          service={serviceTitle}
-          titleservice={serviceData.title || service}
-          origservice={service}
-        />
+      <TariffExplorer
+  tariffs={allTariffs}
+  cityName={cityName}
+  citySlug={city}
+  service={service}               // ← техническое название (internet, internet-tv)
+  titleservice={serviceTitle}     // ← человекочитаемое название
+  origservice={service}           // ← оригинальное техническое название
+/>
       </Suspense>
     </CityServiceLayout>
   );

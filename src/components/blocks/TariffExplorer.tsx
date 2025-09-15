@@ -422,12 +422,22 @@ export default function TariffExplorer({
 
   const [filters, setFilters] = useState<Filters>({ ...defaultFilters });
 
-  const categoryMapping = useMemo((): Record<string, string> => ({
-    internet: "Интернет",
-    "internet-tv": "Интернет + ТВ",
-    "internet-mobile": "Интернет + Моб. связь",
-    "internet-tv-mobile": "Интернет + ТВ + Моб. связь",
-  }), []);
+ const buttonMapping = useMemo((): Record<string, string> => ({
+  internet: "Интернет",
+  "internet-tv": "Интернет + ТВ",
+  "internet-mobile": "Интернет + Моб. связь",
+  "internet-tv-mobile": "Интернет + ТВ + Моб. связь",
+}), []);
+
+const headerMapping = useMemo((): Record<string, string> => ({
+  internet: "интернет",
+  "internet-tv": "интернет и телевидение",
+  "internet-mobile": "интернет и мобильную связь",
+  "internet-tv-mobile": "интернет, ТВ и мобильную связь",
+}), []);
+
+const breadcrumbTitle = buttonMapping[origservice as keyof typeof buttonMapping] || titleservice;
+const headerTitle = headerMapping[origservice as keyof typeof headerMapping] || service;
 
   // Логика для дополнительных категорий по подстроке в названии тарифа
   const getOverrideCategories = useMemo(() => (name: string): string[] => {
@@ -467,14 +477,14 @@ export default function TariffExplorer({
   }, [priceRange]);
 
   useEffect(() => {
-    if (categoryMapping[origservice]) {
+    if (buttonMapping[origservice as keyof typeof buttonMapping]) {
       setActiveCategory(origservice);
       setFilters(prev => ({
         ...prev,
         ...getServiceFiltersForCategory(origservice),
       }));
     }
-  }, [origservice, categoryMapping]);
+  }, [origservice, buttonMapping]);
 
   const filteredTariffs = useMemo(() => {
     const hasActiveFilters = filters.internet || filters.tv || filters.mobile ||
@@ -588,18 +598,18 @@ export default function TariffExplorer({
   const isAllCategoryActive = !filters.internet && !filters.tv && !filters.mobile;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#e30611]/5 via-[#8f97de]/10 to-[#ad82f2]/5 py-8">
-        <div className="container mx-auto px-4">
-          <div className="text-sm text-gray-600 mb-2">
-            МТС / {cityName} / <b>{titleservice}</b>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Тарифы МТС на {service} в {cityName}
-          </h1>
-        </div>
+ <div className="flex flex-col min-h-screen">
+  {/* Header */}
+  <div className="bg-gradient-to-r from-[#e30611]/5 via-[#8f97de]/10 to-[#ad82f2]/5 py-8">
+    <div className="container mx-auto px-4">
+      <div className="text-sm text-gray-600 mb-2">
+        МТС / {cityName} / <b>{breadcrumbTitle}</b> {/* ← Исправлено */}
       </div>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+        Тарифы МТС на {headerTitle} в {cityName} {/* ← Исправлено */}
+      </h1>
+    </div>
+  </div>
 
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
         {/* Desktop Filters */}
@@ -741,7 +751,7 @@ export default function TariffExplorer({
                 Все
               </button>
               
-              {Object.entries(categoryMapping).map(([id, label]) => {
+              {Object.entries(buttonMapping).map(([id, label]) => {
                 const { internet, tv, mobile } = filters;
                 const expected = getServiceFiltersForCategory(id);
                 const isActiveCategory = internet === expected.internet && tv === expected.tv && mobile === expected.mobile;
@@ -805,8 +815,8 @@ export default function TariffExplorer({
             tariff={t}
             onClick={() => setIsSegmentationModalOpen(true)}
             currentCategory={activeCategory}
-            currentCategoryLabel={categoryMapping[activeCategory] || "Все"}
-            categoryMapping={categoryMapping}
+            currentCategoryLabel={buttonMapping[activeCategory as keyof typeof buttonMapping] || "Все"}
+            categoryMapping={buttonMapping}
           />
         ))}
       </div>
