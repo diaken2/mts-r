@@ -18,7 +18,8 @@ export default function Header() {
   const { isSupportOnly } = useSupportOnly();
   const router = useRouter();
   const { setCity, city } = useCity();
-
+const citySlug =
+      city && city.trim().length > 0 ? slugifyCityName(city) : "moskva";
   const services = [
     { name: "Интернет", filter: "internet" },
     { name: "Интернет + ТВ", filter: "internet-tv" },
@@ -64,6 +65,8 @@ export default function Header() {
     router.push(`/${citySlug}/${filter}`);
     setIsMenuOpen(false);
   };
+
+   
 
   const handleCitySelect = (selectedCity: string) => {
     setIsCityModalOpen(false);
@@ -150,7 +153,7 @@ export default function Header() {
 
             {!isSupportOnly && (
               <Link
-                href="/contacts"
+                href={`/${citySlug}/contacts`}
                 className="px-4 py-2 rounded-xl font-semibold hover:bg-[#f6f8ff] hover:text-[#ee3c6b] transition-all duration-300"
               >
                 Контакты

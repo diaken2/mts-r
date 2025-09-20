@@ -22,7 +22,7 @@ export default async function CityPolicyPage({ params }: { params: { city: strin
   return (
     <>
       <SetCityEffect city={data.meta.name} />
-      <PrivacyPage />
+      <PrivacyPage cityName={data.meta.name}  />
     </>
   );
 }
