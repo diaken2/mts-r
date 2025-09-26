@@ -385,7 +385,7 @@ export default function CityTariffExplorer({
   const [sortBy, setSortBy] = useState("popular");
   const [activeCategory, setActiveCategory] = useState("all");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  
+   const [selectedTariff, setSelectedTariff] = useState<any>(null);
   const { isSupportOnly } = useSupportOnly();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -810,7 +810,11 @@ export default function CityTariffExplorer({
       <TariffCard
         key={t.id}
         tariff={t}
-        onClick={() => setIsSegmentationModalOpen(true)}
+        onClick={() => {
+           setSelectedTariff(t)
+          setIsSegmentationModalOpen(true)
+
+        }}
         currentCategory={activeCategory}
         currentCategoryLabel={categoryMapping[activeCategory] || "Все"}
         categoryMapping={categoryMapping}
@@ -873,10 +877,13 @@ export default function CityTariffExplorer({
         onClose={() => setIsSegmentationModalOpen(false)}
         onNewConnection={() => setIsConnectionModalOpen(true)}
         onExistingConnection={() => setIsConnectionModalOpen(true)}
+          selectedTariff={selectedTariff}
       />
       
       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
-      <ConnectionForm isOpen={isConnectionModalOpen} onClose={() => setIsConnectionModalOpen(false)} />
+      <ConnectionForm  selectedTariff={selectedTariff} isOpen={isConnectionModalOpen} onClose={() => {
+         setSelectedTariff(null);
+         setIsConnectionModalOpen(false)}} />
       <CallRequestModal isOpen={isCallRequestModalOpen} onClose={() => setIsCallRequestModalOpen(false)} />
       
       <MobileFiltersDrawer

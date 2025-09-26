@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import { submitLead } from '@/lib/submitLead';
 import { useSupportOnly } from '@/context/SupportOnlyContext';
 import Link from 'next/link';
-
 interface ConnectionFormProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedTariff?: any; // Добавьте это (опционально)
 }
 
 interface TimeSlot {
@@ -17,7 +17,7 @@ interface TimeSlot {
   label: string;
 }
 
-export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps) {
+export default function ConnectionForm({ isOpen,selectedTariff, onClose }: ConnectionFormProps) {
   const [phone, setPhone] = useState('');
   const [callTime, setCallTime] = useState('');
   const [touched, setTouched] = useState(false);
@@ -180,6 +180,9 @@ export default function ConnectionForm({ isOpen, onClose }: ConnectionFormProps)
         type: 'Заявка на подключение',
         phone: phone,
         callTime: callTimeText,
+          tariffName: selectedTariff?.name || 'Не указан', // Добавьте название тарифа
+      tariffPrice: selectedTariff?.price || 0, // Добавьте цену тарифа
+      tariffSpeed: selectedTariff?.speed || 0, // Добавьте скорость тарифа
       });
 
       if (result.success) {

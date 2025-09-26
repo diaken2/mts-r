@@ -825,12 +825,12 @@ const slug = city
         <QuestionsBlock />
       </SupportOnlyBlock>
       <Footer cityName={citySlug} />
-      <SegmentationModal
+      {/* <SegmentationModal
         isOpen={isSegmentationModalOpen}
         onClose={() => setIsSegmentationModalOpen(false)}
         onNewConnection={() => setIsConnectionModalOpen(true)}
         onExistingConnection={() => setIsConnectionModalOpen(true)}
-      />
+      /> */}
       <ContactModal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
