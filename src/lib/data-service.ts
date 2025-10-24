@@ -48,7 +48,7 @@ const cache = new Map<string, CityData>();
 
 export async function getCityData(slug: string): Promise<CityData | null> {
   try {
-    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs/${slug}`, {
+    const res = await fetch(`https://mts-r-server.vercel.app/api/tariffs/${slug}`, {
       cache: 'no-store',
     });
     
@@ -80,7 +80,7 @@ export async function getServiceData(city: string, service: string): Promise<{
   service: ServiceData 
 } | null> {
   try {
-    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs/${city}/${service}`, {
+    const res = await fetch(`https://mts-r-server.vercel.app/api/tariffs/${city}/${service}`, {
       cache: 'no-store',
     });
     
@@ -101,7 +101,7 @@ export async function getServiceData(city: string, service: string): Promise<{
 
 export async function getAvailableCities(): Promise<string[]> {
   try {
-    const res = await fetch(`https://mts-r-server.onrender.com/api/tariffs`, {
+    const res = await fetch(`https://mts-r-server.vercel.app/api/tariffs`, {
       cache: 'no-store',
     });
     

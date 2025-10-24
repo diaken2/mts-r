@@ -83,7 +83,7 @@ function CityDropdown({ isOpen, onClose, onSelect, currentCity }: CityDropdownPr
       const fetchRegions = async () => {
         try {
           setIsLoading(true);
-          const response = await fetch('https://mts-r-server.onrender.com/api/regions');
+          const response = await fetch('https://mts-r-server.vercel.app/api/regions');
           if (response.ok) {
             const data = await response.json();
             setRegionsData(data);
